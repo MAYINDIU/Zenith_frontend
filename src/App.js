@@ -26,7 +26,7 @@ function App() {
               <Route path='/' element={<Login />}>Login</Route>
               <Route path='/dashboard' element={<Requireauth><Home /></Requireauth> }>Home</Route>
               <Route path='/module' element={<Requireauth><Module /></Requireauth>}>All Module</Route>
-              <Route path='/permission' element={<Requireauth><Permission /></Requireauth>}>Permission</Route>
+              <Route path='/permission=:id=:name' element={<Requireauth><Permission /></Requireauth>}>Permission</Route>
               <Route path='/about' element={<About />}>About</Route>
               <Route path='/contact' element={<Contact />}>Contact</Route>
               <Route path='/user-list' element={<Requireauth><Userlist /></Requireauth>}>All user</Route>

@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../Nabar/Navbar';
 import { Button, Checkbox, Dropdown, Label, TextInput } from 'flowbite-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import logo from '../../assets/icon/jenith.png';
 
 const Permission = () => {
  const [deptHeadList,setDeptHeadList]=useState([]);
  const [departmentName,setDepartmentName]=useState('');
  const [moduleName,setModuleName]=useState('');
+ const { id,name} = useParams();
+ console.log(id,name);
 
- console.log(departmentName)
+
 // fetch all department head data
  useEffect(() => {
     fetch('http://localhost:5000/api/department-head-list')
@@ -34,7 +36,7 @@ const Permission = () => {
                     <div className="mb-2 block w-full text-left">
                     <Label htmlFor="Module Name" value="Module Name" />
                     </div>
-                    <TextInput  onChange={(e) => setModuleName(e.target.value)} id="modulename" type="text" placeholder="Accounts" required />
+                    <TextInput value={name} id="modulename" type="text" placeholder="Accounts" required />
                 </div>
               
                 <div className='w-full'>

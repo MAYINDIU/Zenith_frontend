@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/icon/jenith.png';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
 
 const navigate = useNavigate();
@@ -55,8 +55,11 @@ const login = event => {
 
     useEffect(() => {
         if (status=== 'A') {
-      
+          
             navigate(`/dashboard`);
+            toast.success("Login Successfully", {
+                theme: "colored",
+            });
              
         } else if(error=== 'User not found') {
             // alert('Please type proper user id & pass');
