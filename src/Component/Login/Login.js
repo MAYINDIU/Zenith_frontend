@@ -3,14 +3,16 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/icon/jenith.png';
 import { ToastContainer, toast } from 'react-toastify';
+import { Circles, ThreeCircles } from 'react-loader-spinner';
 // import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
 
 const navigate = useNavigate();
 const[userData,setUserData]=useState('');
-console.log(userData)
+const [spinner, setSpinner] = useState(false); 
+// console.log(userData)
 const error=userData?.error;
-console.log(error);
+// console.log(error);
 const User=userData?.user_details;
 
 
@@ -31,13 +33,6 @@ const login = event => {
     event.preventDefault();
     const username = event.target.username.value;
     const password = event.target.password.value;
-    // const addItem = {username, password};
-    //     console.log(addItem);
-
-    //     if(username==='admin' && password==='admin'){
-    //       navigate('/dashboard');
-
-    //     }
 
     const url = `http://localhost:5000/api/user-login/${username}/${password}`;
     fetch(url, {
@@ -46,11 +41,12 @@ const login = event => {
             "Access-Control-Allow-Origin": "*",
             "content-type": "application/json"
         },
-        // body: JSON.stringify(addItem)
+ 
 
     })
         .then(Response => Response.json())
-        .then(data => setUserData(data));              
+        .then(data => setUserData(data));    
+        setSpinner(true);          
     }
 
     useEffect(() => {
@@ -63,7 +59,7 @@ const login = event => {
              
         } else if(error=== 'User not found') {
             // alert('Please type proper user id & pass');
-        
+            setSpinner(false);  
             //  toast.error(`Opps!Please type proper emp code & password`);
         }
         else if(status==='I') {
@@ -98,7 +94,20 @@ const login = event => {
                     <Label htmlFor="remember">Remember me</Label>
                 </div>
                 <h6 className='text-red-700'>{error}</h6>
-                
+                <div className="flex justify-center mb-2 ">
+                <ThreeCircles
+                height="60"
+                width="60"
+                color="#4fa94d"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={spinner}
+                ariaLabel="three-circles-rotating"
+                outerCircleColor=""
+                innerCircleColor=""
+                middleCircleColor=""
+                />
+              </div>
                 <div>
                     
                 </div>

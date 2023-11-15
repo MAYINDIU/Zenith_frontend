@@ -6,7 +6,7 @@ import user from '../assets/icon/user.png';
 const Home = () => {
 
   const[Dept_head,setDept_head]=useState('');
-  console.log(Dept_head)
+  // console.log(Dept_head)
 
   const dept_name=Dept_head?.department_name;
   // console.log(dept_name);
