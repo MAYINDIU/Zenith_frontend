@@ -9,7 +9,7 @@ const Module = () => {
     const [spinner, setSpinner] = useState(false); 
     // fetch all module list
     useEffect(() => {
-        setSpinner(false); 
+        setSpinner(true); 
         fetch('http://localhost:5000/api/all-modules')
         .then(res=>res.json())
         .then(data=>setModueleList(data?.module_list));
