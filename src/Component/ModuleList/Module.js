@@ -3,20 +3,29 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../Nabar/Navbar';
 import { Link, useParams } from 'react-router-dom';
 import { ThreeCircles } from 'react-loader-spinner';
+import axios from 'axios';
 
 const Module = () => {
     const[moduleList,setModueleList]=useState(['']);
     const [spinner, setSpinner] = useState(false); 
-    // fetch all module list
-    useEffect(() => {
-        setSpinner(true); 
-        fetch('http://localhost:5000/api/all-modules')
-        .then(res=>res.json())
-        .then(data=>setModueleList(data?.module_list));
-        setSpinner(false); 
-    });
-    // fetch all module list
 
+
+// fetch sub module list
+const ModuleList = async () => {
+  try {
+    const response = await axios.get('http://localhost:5000/api/all-modules');
+    setModueleList(response.data?.module_list);
+    setSpinner(false); 
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+// Call sub module list
+useEffect(() => {
+  ModuleList();
+}, []);
+// fetch sub module list
 
 
     return (

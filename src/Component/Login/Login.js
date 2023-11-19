@@ -41,17 +41,14 @@ const login = event => {
             "Access-Control-Allow-Origin": "*",
             "content-type": "application/json"
         },
- 
-
     })
         .then(Response => Response.json())
         .then(data => setUserData(data));    
-        setSpinner(true);          
+         setSpinner(true);          
     }
 
     useEffect(() => {
         if (status=== 'A') {
-          
             navigate(`/dashboard`);
             toast.success("Login Successfully", {
                 theme: "colored",
