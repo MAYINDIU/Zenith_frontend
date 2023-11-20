@@ -19,7 +19,7 @@ const Permission = () => {
 const navigate=useNavigate();
 
 
-console.log(selectdept)
+// console.log(selectdept)
 
 const user_information=JSON.parse(localStorage.getItem('UserDetails'));
 // console.log(user_information)

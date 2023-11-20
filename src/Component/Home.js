@@ -6,10 +6,12 @@ import dept_head from '../assets/icon/dept_head.png';
 import total_module from '../assets/icon/module.png';
 import department from '../assets/icon/dept_total.png';
 import info from '../assets/icon/info.png';
+import axios from 'axios';
 const Home = () => {
 
   const[Dept_head,setDept_head]=useState('');
-  // console.log(Dept_head)
+  const[total_user,setTotalUser]=useState('');
+  // console.log(total_user)
 
   const dept_name=Dept_head?.department_name;
   // console.log(dept_name);
@@ -18,14 +20,34 @@ const Home = () => {
   const UserD=JSON.parse(localStorage.getItem("UserDetails"));
   const PERSONAL_ID=UserD?.PERSONALID;
   const NAME=UserD?.NAME;
-      
-  // fetch all department head data
-  useEffect(() => {
-    fetch(`http://localhost:5000/api/department-head/${PERSONAL_ID}`)
-    .then(res=>res.json())
-    .then(data=>setDept_head(data?.dept_head_details));
-  });
-  // fetch all department head data
+
+// Department Head Details
+  const departmentHeadList = async () => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/department-head/${PERSONAL_ID}`);
+    setDept_head(response.data?.dept_head_details);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+ };
+useEffect(() => {
+  departmentHeadList();
+}, []);
+// Department Head Details
+
+// Total User data
+const totalUser = async () => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/total-user`);
+    setTotalUser(response.data?.total_user);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+ };
+useEffect(() => {
+  totalUser();
+}, []);
+// Department Head Details
 
      
    
@@ -52,7 +74,7 @@ const Home = () => {
         
             <div className=' ml-1  lg:ml-5 mt-3'>
                 <h5 className="text-md lg:text-xl font-bold tracking-tight ">
-                 100
+                {total_user?.total_user}
                 </h5>
                 <h5 className="font-normal mt-2">
                 TOTAL USERS

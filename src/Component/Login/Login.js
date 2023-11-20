@@ -16,19 +16,12 @@ const error=userData?.error;
 const User=userData?.user_details;
 
 
-const status=User?.STATUS;
+const ROLE_ID=User?.ROLE_ID;
 
 localStorage.setItem("UserDetails", JSON.stringify(User));
         
 
-// fetch all department head data
-// useEffect(() => {
-//     fetch('http://localhost:5000/api/department-head-list')
-//     .then(res=>res.json())
-//     .then(data=>setDeptHeadList(data.dept_head));
-//   });
-// fetch all department head data
-
+//user login process
 const login = event => {
     event.preventDefault();
     const username = event.target.username.value;
@@ -48,7 +41,7 @@ const login = event => {
     }
 
     useEffect(() => {
-        if (status=== 'A') {
+        if (ROLE_ID===0) {
             navigate(`/dashboard`);
             toast.success("Login Successfully", {
                 theme: "colored",
@@ -59,8 +52,25 @@ const login = event => {
             setSpinner(false);  
             //  toast.error(`Opps!Please type proper emp code & password`);
         }
-        else if(status==='I') {
-            alert('!!Your Account Deactivated');
+        else if(ROLE_ID===1) {
+            navigate(`/about`);
+            // alert('!!Your Account Deactivated');
+        }
+        else if(ROLE_ID===2) {
+            navigate(`/about`);
+            // alert('!!Your Account Deactivated');
+        }
+        else if(ROLE_ID===3) {
+            navigate(`/about`);
+            // alert('!!Your Account Deactivated');
+        }
+        else if(ROLE_ID===4) {
+            navigate(`/about`);
+            // alert('!!Your Account Deactivated');
+        }
+        else if(ROLE_ID===5) {
+            navigate(`/about`);
+            // alert('!!Your Account Deactivated');
         }
     });
 
