@@ -53,20 +53,20 @@ const login = event => {
             //  toast.error(`Opps!Please type proper emp code & password`);
         }
         else if(ROLE_ID===1) {
-            navigate(`/about`);
-            // alert('!!Your Account Deactivated');
+            navigate(`/desk-user`);
+
         }
         else if(ROLE_ID===2) {
-            navigate(`/about`);
-            // alert('!!Your Account Deactivated');
+            navigate(`/department-head`);
+
         }
         else if(ROLE_ID===3) {
-            navigate(`/about`);
-            // alert('!!Your Account Deactivated');
+            navigate(`/director`);
+ 
         }
         else if(ROLE_ID===4) {
-            navigate(`/about`);
-            // alert('!!Your Account Deactivated');
+            navigate(`/development`);
+   
         }
         else if(ROLE_ID===5) {
             navigate(`/about`);

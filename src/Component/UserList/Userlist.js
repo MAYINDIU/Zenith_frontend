@@ -5,8 +5,8 @@ import axios from 'axios';
 const Userlist = () => {
 
 const[permissionList,setpermissionList]=useState(['']);
-console.log(permissionList)
-// fetch sub module list
+// console.log(permissionList)
+// fetch permission list
 const dept_permission_list = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/api/dept-permission-list`);
@@ -15,24 +15,20 @@ const dept_permission_list = async () => {
       console.error("Error fetching data:", error);
     }
   };
-  
-  // Call sub module list
+
   useEffect(() => {
     dept_permission_list();
   }, []);
-//   fetch sub module list
-
-
-
+//  fetch permission list
 
 
     return (
         <div>
             <Navbar/>
             <h1 className='shadow w-64 mx-auto p-3 mt-5 font-bold rounded text-center'>ALL USER PERMISSION LIST</h1>
-    <div className='lg:px-48 mt-5'>
-     
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            
+    <div className='lg:px-48 mt-5'>  
+   <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full border bordered  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-white uppercase bg-[#087f23] dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -55,7 +51,7 @@ const dept_permission_list = async () => {
                 PERMITTED_BY
                 </th>
                 <th scope="col" class="px-4 py-3">
-                CRUD
+                OPERATION
                 </th>
             </tr>
         </thead>

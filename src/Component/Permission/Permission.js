@@ -22,7 +22,7 @@ const navigate=useNavigate();
 // console.log(selectdept)
 
 const user_information=JSON.parse(localStorage.getItem('UserDetails'));
-// console.log(user_information)
+const PERSONAL_ID=user_information?.PERSONALID;
 
 
 
@@ -87,7 +87,7 @@ const permissionAdd= event => {
   event.preventDefault();
   const MODULE_ID=moduleName;
   const ACCESS_USER=departmentName;
-  const PERMITTED_BY='admin';
+  const PERMITTED_BY=PERSONAL_ID;
 
   if(MODULE_ID===""){
     alert('Pleasee Select Module');
@@ -109,8 +109,7 @@ const permissionAdd= event => {
       .then(Response => Response.json())
       .then(data => setAddpermission(data));
       //  setSpinner(true);
-      moduleName=""
-      departmentName=""
+   
     }
   
 }
