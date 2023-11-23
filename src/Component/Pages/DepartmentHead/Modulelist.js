@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../Nabar/Navbar';
 import { ThreeCircles } from 'react-loader-spinner';
-import { Button } from 'flowbite-react';
+import { Button, Toast } from 'flowbite-react';
 
 const Modulelist = () => {
 const[moduleList,setModueleList]=useState(['']);
@@ -13,12 +13,14 @@ const [spinner, setSpinner] = useState(false);
 const [user_id,setUser]=useState('');
 const [module_id,setModuleName]=useState('');
 const [previlage_id,setPrevilage]=useState('');
+const [addPermission,setAddpermission]=useState('');
 console.log(user_id,module_id,previlage_id)
-
+const navigate=useNavigate();
 
  //Get from localstorage user_details data
  const UserD=JSON.parse(localStorage.getItem("UserDetails"));
  const PERSONAL_ID=UserD?.PERSONALID;
+
   const DEPT_CODE=UserD?.DEPT_CODE;
 // fetch permitted dept-head module list
 const ModuleList = async () => {
@@ -70,10 +72,67 @@ const PrevilageList = async () => {
   }, []);
 // fetch PrevilageList  list
 
+const [selectedPrivileges, setSelectedPrivileges] = useState([]);
+
+console.log(selectedPrivileges)
+
+const handlePrivilegeChange = (e, privilegeId) => {
+    const checked = e.target.checked;
+  
+    // Update selected privileges based on the checkbox state
+    if (checked) {
+      setSelectedPrivileges((prev) => [...prev, privilegeId]);
+    } else {
+      setSelectedPrivileges((prev) => prev.filter((id) => id !== privilegeId));
+    }
+  };
+  
+
+//module permission for desk-employee by department head
+const permissionAdd= event => {
+    event.preventDefault();
+    const MODULE_ID=module_id;
+    const ACCESS_BY=user_id;
+    const PRIVILAGE_ID=previlage_id;
+    const PERMITTED_BY=PERSONAL_ID;
+  
+    if(MODULE_ID===""){
+      alert('Pleasee Select Module');
+    }else if(ACCESS_BY===""){
+      alert('Pleasee Select Access user');
+    }else{
+  
+    const addItem = {MODULE_ID, ACCESS_BY,PRIVILAGE_ID,PERMITTED_BY};
+    const url = 'http://localhost:5000/api/create-permission';
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(addItem)
+  
+    })
+        .then(Response => Response.json())
+        .then(data => setAddpermission(data));
+        //  setSpinner(true);
+     
+      }
+    
+  }
+  
+  
+  if(addPermission==='Permission Successfully'){
+    // navigate('/user-list');
+    alert("Permission Successfully");
+  }
+
+
+
     return (
         <div>
          <Navbar/>
-         <h1 className='shadow-lg w-64 mx-auto p-3 mt-5 font-bold rounded text-center'>MODULE PERMISSION</h1>
+         <h1 className='shadow-lg w-1/3 mx-auto p-3 mt-5 font-bold rounded text-center'>MODULE PERMISSION DEPARTMENT HEAD TO DESK USER</h1>
          <h1 className='mt-5 text-green-700'></h1>
          <div className="flex justify-center mb-2 ">
                 <ThreeCircles
@@ -121,7 +180,7 @@ const PrevilageList = async () => {
                 <div className='lg:w-full w-full'>
                 <div class="p-2 grid grid-cols-4  mt-0 lg:grid-cols-4 gap-3">
                   {previlageList?.map((prev, i) => (
-                  <div class="mx-auto items-center ps-2  rounded dark:border-gray-700">
+                  <div key={i} class="mx-auto items-center ps-2  rounded dark:border-gray-700">
                     <input  onChange={(e) => setPrevilage(e.target.value)} id="bordered-checkbox-1" type="checkbox" value={prev?.prev_id} name="bordered-checkbox" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                     <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{prev?.prev_name}</label>
                     </div>
@@ -129,6 +188,28 @@ const PrevilageList = async () => {
                   ))}
                  </div>
                </div>
+                  
+                {/* <div className="p-2 grid grid-cols-4 mt-0 lg:grid-cols-4 gap-3">
+                {previlageList?.map((prev, i) => (
+                    <div className="mx-auto items-center ps-2 rounded dark:border-gray-700" key={i}>
+                    <input
+                        onChange={(e) => handlePrivilegeChange(e, prev.prev_id)}
+                        id={`bordered-checkbox-${i}`}
+                        type="checkbox"
+                        value={prev.prev_id}
+                        name="bordered-checkbox"
+                        checked={selectedPrivileges.includes(prev.prev_id)}
+                        className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                        htmlFor={`bordered-checkbox-${i}`}
+                        className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                        {prev.prev_name}
+                    </label>
+                    </div>
+                ))}
+                </div> */}
 
                     </div>
                   
@@ -142,7 +223,7 @@ const PrevilageList = async () => {
 
                 </div>
                 <div className='w-80 rounded-md flex  justify-center mx-auto'>
-                <Button   type='submit' color="success">Add Permission</Button>
+                <Button  onClick={permissionAdd}  type='submit' color="success">Add Permission</Button>
                 <div  className='ml-2 w-80' ><Button  type='submit' color="failure">Delete Permission</Button></div> 
                 </div>
             

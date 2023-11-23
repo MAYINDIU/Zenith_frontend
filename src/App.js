@@ -27,7 +27,7 @@ function App() {
     <div className='App'>
          
        
-          <Routes>
+          <Routes >
               <Route path='/' element={<Login />}>Login</Route>
               <Route path='/dashboard' element={<Requireauth><Home /></Requireauth> }>Home</Route>
               <Route path='/module' element={<Requireauth><Module /></Requireauth>}>All Module</Route>
