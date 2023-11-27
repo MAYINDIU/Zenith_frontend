@@ -16,6 +16,7 @@ import Notfound from './Component/Notfound';
 import PaymentOverview from './Component/Statement/PaymentOverview';
 import Login from './Component/Login/Login';
 import Userlist from './Component/UserList/Userlist';
+import DepartmentUserlist from './Component/Pages/DepartmentHead/Userlist';
 import Contact from './Component/Contact';
 import Module from './Component/ModuleList/Module';
 import Permission from './Component/Permission/Permission';
@@ -39,6 +40,8 @@ function App() {
             {/* Department Head */}
             <Route path='/department-head' element={<Requireauth><DepartmentHeadHome/></Requireauth>}>Department Head Home</Route>
             <Route path='/module-list' element={<Requireauth><ModuleList/></Requireauth>}>Department Head permitted module list</Route>
+            <Route path='/permission-user-list' element={<Requireauth><DepartmentUserlist /></Requireauth>}>Department All user</Route>
+
             {/* Department Head */}
 
             {/*Director*/}

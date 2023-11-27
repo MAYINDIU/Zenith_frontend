@@ -86,46 +86,94 @@ const handlePrivilegeChange = (e, privilegeId) => {
       setSelectedPrivileges((prev) => prev.filter((id) => id !== privilegeId));
     }
   };
-  
 
 //module permission for desk-employee by department head
-const permissionAdd= event => {
-    event.preventDefault();
-    const MODULE_ID=module_id;
-    const ACCESS_BY=user_id;
-    const PRIVILAGE_ID=previlage_id;
-    const PERMITTED_BY=PERSONAL_ID;
+// const permissionAdd= event => {
+//     event.preventDefault();
+//     const MODULE_ID=module_id;
+//     const ACCESS_BY=user_id;
+//     const PRIVILAGE_ID=previlage_id;
+//     const PERMITTED_BY=PERSONAL_ID;
   
-    if(MODULE_ID===""){
-      alert('Pleasee Select Module');
-    }else if(ACCESS_BY===""){
-      alert('Pleasee Select Access user');
-    }else{
+//     if(MODULE_ID===""){
+//       alert('Pleasee Select Module');
+//     }else if(ACCESS_BY===""){
+//       alert('Pleasee Select Access user');
+//     }
+//     else if(PRIVILAGE_ID===""){
+//       alert('Pleasee Select Preivilage');
+//     }
+//     else{
   
-    const addItem = {MODULE_ID, ACCESS_BY,PRIVILAGE_ID,PERMITTED_BY};
+//     const addItem = {MODULE_ID, ACCESS_BY,PRIVILAGE_ID,PERMITTED_BY};
+
+//     console.log(addItem)
+//     const url = 'http://localhost:5000/api/create-permission';
+//     fetch(url, {
+//         method: "POST",
+//         headers: {
+//             "Access-Control-Allow-Origin": "*",
+//             "content-type": "application/json"
+//         },
+//         body: JSON.stringify(addItem)
+  
+//     })
+//         .then(Response => Response.json())
+//         .then(data => setAddpermission(data));
+//         //  setSpinner(true);
+     
+//       }
+    
+//   }
+
+//   if(addPermission==='Permission Successfully'){
+//     navigate('/permission-user-list');
+//   }
+//module permission for desk-employee by department head
+
+const previlage_idd=[1,2]
+const permissionAdd = (event) => {
+  event.preventDefault();
+
+  const MODULE_ID = module_id;
+  const ACCESS_BY = user_id;
+  const PRIVILAGE_IDS = selectedPrivileges; // Assuming previlage_id is an array of selected privilege IDs
+  const PERMITTED_BY = PERSONAL_ID;
+
+  if (MODULE_ID === "") {
+    alert('Please Select Module');
+  } else if (ACCESS_BY === "") {
+    alert('Please Select Access user');
+  } else if (PRIVILAGE_IDS.length === 0) {
+    alert('Please Select Privileges');
+  } else {
+    const permissions = PRIVILAGE_IDS.map((privilegeId) => ({
+      MODULE_ID,
+      ACCESS_BY,
+      PRIVILAGE_ID: privilegeId,
+      PERMITTED_BY,
+    }));
+
+    console.log(permissions);
+
     const url = 'http://localhost:5000/api/create-permission';
     fetch(url, {
-        method: "POST",
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "content-type": "application/json"
-        },
-        body: JSON.stringify(addItem)
-  
+      method: "POST",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(permissions)
     })
-        .then(Response => Response.json())
-        .then(data => setAddpermission(data));
-        //  setSpinner(true);
-     
-      }
-    
+      .then(Response => Response.json())
+      .then(data => setAddpermission(data));
   }
-  
-  
-  if(addPermission==='Permission Successfully'){
-    // navigate('/user-list');
-    alert("Permission Successfully");
-  }
+}
+
+if (addPermission === 'Permission Successfully') {
+  navigate('/permission-user-list');
+}
+
 
 
 
@@ -133,7 +181,7 @@ const permissionAdd= event => {
         <div>
          <Navbar/>
          <h1 className='shadow-lg w-1/3 mx-auto p-3 mt-5 font-bold rounded text-center'>MODULE PERMISSION DEPARTMENT HEAD TO DESK USER</h1>
-         <h1 className='mt-5 text-green-700'></h1>
+         <h1 className='mt-5 text-green-700'>{addPermission}</h1>
          <div className="flex justify-center mb-2 ">
                 <ThreeCircles
                 height="60"
@@ -178,18 +226,7 @@ const permissionAdd= event => {
                     
 
                 <div className='lg:w-full w-full'>
-                <div class="p-2 grid grid-cols-4  mt-0 lg:grid-cols-4 gap-3">
-                  {previlageList?.map((prev, i) => (
-                  <div key={i} class="mx-auto items-center ps-2  rounded dark:border-gray-700">
-                    <input  onChange={(e) => setPrevilage(e.target.value)} id="bordered-checkbox-1" type="checkbox" value={prev?.prev_id} name="bordered-checkbox" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{prev?.prev_name}</label>
-                    </div>
-              
-                  ))}
-                 </div>
-               </div>
-                  
-                {/* <div className="p-2 grid grid-cols-4 mt-0 lg:grid-cols-4 gap-3">
+                <div className="p-2 grid grid-cols-4 mt-0 lg:grid-cols-4 gap-3">
                 {previlageList?.map((prev, i) => (
                     <div className="mx-auto items-center ps-2 rounded dark:border-gray-700" key={i}>
                     <input
@@ -209,7 +246,10 @@ const permissionAdd= event => {
                     </label>
                     </div>
                 ))}
-                </div> */}
+                </div>
+               </div>
+                  
+           
 
                     </div>
                   

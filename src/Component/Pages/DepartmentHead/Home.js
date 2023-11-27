@@ -62,14 +62,14 @@ const ModuleList = async () => {
                <br/> <span className='text-sm font-bold-none'>{dept_name} </span> </h1>
              </div>
              <div class="grid grid-cols-2 mt-5 lg:grid-cols-6 gap-2 flex  justify-center">
-           {moduleList?.map((mName, i) => (  
-                       <Link key={i}  to={'#'}>
+            {moduleList?.map((mName, i) => (  
+                  <Link key={i}  to={'#'}>
                    <div  class=" shadow-md bordered text-white rounded p-2 lg:p-4 rounded bordered  bg-[#0E9F6E] max-w-sm">
                    <h5 className="font-normal mt-1">
                    {mName?.Module_name}
                     </h5> 
                    </div>
-                   </Link>
+                  </Link>
        
               ))}
           </div>

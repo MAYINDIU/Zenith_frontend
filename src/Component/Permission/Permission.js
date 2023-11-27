@@ -83,39 +83,48 @@ useEffect(() => {
 
 
 //module permission for department head by admin
-const permissionAdd= event => {
+
+
+const previlage_idd=[1,2,3,4]
+const permissionAdd = (event) => {
   event.preventDefault();
-  const MODULE_ID=moduleName;
-  const ACCESS_USER=departmentName;
-  const PERMITTED_BY=PERSONAL_ID;
 
-  if(MODULE_ID===""){
-    alert('Pleasee Select Module');
-  }else if(ACCESS_USER===""){
-    alert('Pleasee Select Department');
-  }else{
+  const MODULE_ID = moduleName;
+  const ACCESS_BY = departmentName;
+  const PRIVILAGE_IDS = previlage_idd; // Assuming previlage_id is an array of selected privilege IDs
+  const PERMITTED_BY = PERSONAL_ID;
 
-  const addItem = {MODULE_ID, ACCESS_USER,PERMITTED_BY};
-  const url = 'http://localhost:5000/api/create';
-  fetch(url, {
+  if (MODULE_ID === "") {
+    alert('Please Select Module');
+  } else if (ACCESS_BY === "") {
+    alert('Please Select Access user');
+  } else if (PRIVILAGE_IDS.length === 0) {
+    alert('Please Select Privileges');
+  } else {
+    const permissions = PRIVILAGE_IDS.map((privilegeId) => ({
+      MODULE_ID,
+      ACCESS_BY,
+      PRIVILAGE_ID: privilegeId,
+      PERMITTED_BY,
+    }));
+
+    console.log(permissions);
+
+    const url = 'http://localhost:5000/api/create-permission';
+    fetch(url, {
       method: "POST",
       headers: {
-          "Access-Control-Allow-Origin": "*",
-          "content-type": "application/json"
+        "Access-Control-Allow-Origin": "*",
+        "content-type": "application/json"
       },
-      body: JSON.stringify(addItem)
-
-  })
+      body: JSON.stringify(permissions)
+    })
       .then(Response => Response.json())
       .then(data => setAddpermission(data));
-      //  setSpinner(true);
-   
-    }
-  
+  }
 }
 
-
-if(addPermission==='Permission Successfully'){
+if (addPermission === 'Permission Successfully') {
   navigate('/user-list');
 }
 

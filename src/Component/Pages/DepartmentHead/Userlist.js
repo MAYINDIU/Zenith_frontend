@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '../Nabar/Navbar';
 import axios from 'axios';
+import Navbar from '../../Nabar/Navbar';
 
 const Userlist = () => {
 
 const[permissionList,setpermissionList]=useState(['']);
+
+ //Get from localstorage user_details data
+ const UserD=JSON.parse(localStorage.getItem("UserDetails"));
+ const PERSONAL_ID=UserD?.PERSONALID;
+
 // console.log(permissionList)
 // fetch permission list
 const dept_permission_list = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/dept-permission-list`);
-      setpermissionList(response.data?.dept_permission_list);
+      const response = await axios.get(`http://localhost:5000/api/permission-list-depthead/${PERSONAL_ID}`);
+      setpermissionList(response.data?.permission_list);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -25,7 +30,7 @@ const dept_permission_list = async () => {
     return (
         <div>
             <Navbar/>
-            <h1 className='shadow w-64 mx-auto p-3 mt-5 font-bold rounded text-center'>ALL USER PERMISSION LIST</h1>
+            <h1 className='shadow w-1/5 mx-auto p-3 mt-5 font-bold rounded text-center'>DEPARTMENT ALL USER PERMISSION LIST</h1>
             
     <div className='lg:px-48 mt-5'>  
    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -42,10 +47,13 @@ const dept_permission_list = async () => {
                    ACCESS USER
                 </th>
                 <th scope="col" class="px-4 py-3">
-                DEPARTMENT
+                PERMISSION
                 </th>
                 <th scope="col" class="px-4 py-3">
-                PERMISSION
+                CREATED DATE
+                </th>
+                <th scope="col" class="px-4 py-3">
+                PERMITTED_BY
                 </th>
                 <th scope="col" class="px-4 py-3">
                 OPERATION
@@ -59,22 +67,20 @@ const dept_permission_list = async () => {
                  {i+1}
                 </th>
                 <th scope="row" class="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                 {p_list?.module_name}
+                 {p_list?.Module_id}
                 </th>
                 <td class="px-2 py-3">
-                {p_list?.name}
+                {p_list?.Access_by}
                 </td>
                 <td class="px-2 py-3">
-                {p_list?.dep_name}
+                {p_list?.Previlage_id}
                 </td>
                 <td class="px-2 py-3">
-                <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_read===1?"VIEW":null} </span>
-                <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_create===2?"CREATE":null} </span>
-                <span className='ml-1 text-white bg-[#00838F] rounded p-2'>{p_list?.p_edit===3?"EDIT":null} </span>
-                <span className='ml-1 text-white bg-[#00838F] rounded p-2'>{p_list?.p_delete===4?"DELETE":null}</span>
-
+                {p_list?.Created_date}
                 </td>
-               
+                <td class="px-2 py-3">
+                {p_list?.Permitted_by} 
+                </td>
                 <td class="px-2 py-3">
                     <a href="#" class="font-medium p-2 rounded text-white bg-[#004D40]  dark:text-blue-500 hover:underline">Edit</a>
                     <a href="#" class="font-medium p-2 rounded ml-3 text-white bg-[#BF360C]  dark:text-blue-500 hover:underline">Delete</a>
