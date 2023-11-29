@@ -25,14 +25,13 @@ const user_information=JSON.parse(localStorage.getItem('UserDetails'));
 const PERSONAL_ID=user_information?.PERSONALID;
 
 
-
-
-
 // fetch all department head data
   const deptHeadData = async () => {
+    setSpinner(true)
     try {
       const response = await axios.get("http://localhost:5000/api/department-head-list");
       setDeptHeadList(response.data?.dept_head);
+      setSpinner(false)
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -45,14 +44,13 @@ const PERSONAL_ID=user_information?.PERSONALID;
 // fetch all department head data
 
 
-
-
-
 // fetch sub module list
 const submoduleData = async () => {
+  setSpinner(true)
   try {
     const response = await axios.get(`http://localhost:5000/api/module-list/${id}`);
     setModuleList(response.data?.sub_module_list);
+    setSpinner(false);
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -70,6 +68,7 @@ const selectedDepatData = async () => {
   try {
     const response = await axios.get(`http://localhost:5000/api/dept-list-mIdwise/${moduleName}`);
     setselectdept(response.data?.department_list);
+  
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -83,8 +82,6 @@ useEffect(() => {
 
 
 //module permission for department head by admin
-
-
 const previlage_idd=[1,2,3,4]
 const permissionAdd = (event) => {
   event.preventDefault();
@@ -127,8 +124,6 @@ const permissionAdd = (event) => {
 if (addPermission === 'Permission Successfully') {
   navigate('/user-list');
 }
-
-
 
     return (
         <div>

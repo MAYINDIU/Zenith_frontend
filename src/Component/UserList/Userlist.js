@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../Nabar/Navbar';
 import axios from 'axios';
+import { ThreeCircles } from 'react-loader-spinner';
 
 const Userlist = () => {
 
 const[permissionList,setpermissionList]=useState(['']);
+const [spinner, setSpinner] = useState(false); 
+
 // console.log(permissionList)
 // fetch permission list
 const dept_permission_list = async () => {
+    setSpinner(true)
     try {
       const response = await axios.get(`http://localhost:5000/api/dept-permission-list`);
       setpermissionList(response.data?.dept_permission_list);
+      setSpinner(false)
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -26,7 +31,20 @@ const dept_permission_list = async () => {
         <div>
             <Navbar/>
             <h1 className='shadow w-64 mx-auto p-3 mt-5 font-bold rounded text-center'>ALL USER PERMISSION LIST</h1>
-            
+            <div className="flex justify-center mb-2 ">
+                <ThreeCircles
+                height="60"
+                width="60"
+                color="#4fa94d"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={spinner}
+                ariaLabel="three-circles-rotating"
+                outerCircleColor=""
+                innerCircleColor=""
+                middleCircleColor=""
+                />
+              </div>
     <div className='lg:px-48 mt-5'>  
    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full border bordered  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
