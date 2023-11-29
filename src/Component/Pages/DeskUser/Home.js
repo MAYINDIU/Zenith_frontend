@@ -44,7 +44,7 @@ const Home = () => {
           </h1>
          </div>
          <div className='flex justify-center'>
-         <div class="grid grid-cols-2 mt-5 lg:grid-cols-6 gap-2 ">
+         <div class="grid  grid-cols-2 mt-5 lg:grid-cols-6 gap-2 ">
         
         {moduleList?.length > 0 ? (
           moduleList.map((mName, i) => (
@@ -59,19 +59,10 @@ const Home = () => {
           
           <div className="text-center w-full text-red lg:ml-72"></div>
         )}
+</div>         
 </div>
-
-          
-</div>
-
-<div class="flex flex-row">
-  <div class="basis-1/4">01</div>
-  <div class="basis-1/4">02</div>
-  <div class="basis-1/2">03</div>
-</div>
-     
-          </div>
-    </div>
+ </div>
+ </div>
     );
 };
 

@@ -60,27 +60,30 @@ const Navbar = () => {
                                      {/* <a class="nav-link block pr-2 lg:px-2 py-2 text-white hover:text-white focus:text-white transition duration-150 ease-in-out" href="/" data-mdb-ripple="true" data-mdb-ripple-color="light">Home</a> */}
                                  </li>
                            
-                            
+                                 <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                  <NavLink className='text-white pr-3 font-weight-bold' to='/department-head' activeStyle={{color: "#005005",textDecoration:"none"}}>Module List</NavLink>
+                                 </li>
+                                 <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                  <NavLink className='text-white pr-3 font-weight-bold' to='/module-list' activeStyle={{color: "#005005",textDecoration:"none"}}>Access Permission</NavLink>
+                                 </li>
+                                 <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                  <NavLink className='text-white pr-3 font-weight-bold' to='/permission-user-list' activeStyle={{color: "#005005",textDecoration:"none"}}>Privilage List</NavLink>
+                                 </li>
                                   <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
-                                  <NavLink className='text-white pr-3 font-weight-bold' to='/module' activeStyle={{color: "#005005",textDecoration:"none"}}>Module List</NavLink>
+                                  <NavLink className='text-white pr-3 font-weight-bold' to='/module' activeStyle={{color: "#005005",textDecoration:"none"}}>Module Assign</NavLink>
                                  </li>
                              
                              
                                   <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
-                                  <NavLink className='text-white pr-3 font-weight-bold' to='/user-list' activeStyle={{color: "#005005",textDecoration:"none"}}>UserList</NavLink>
+                                  <NavLink className='text-white pr-3 font-weight-bold' to='/user-list' activeStyle={{color: "#005005",textDecoration:"none"}}>Department User List</NavLink>
                                  </li>
                              
-                           
-                              
-                                <li class="nav-item flex  text-center bg-[#087f23] pl-3 pr-0 p-1.5 mt-1 mr-3 rounded hover:bg-[#005005]">
-                                      <NavLink className='text-white pr-3' to='/about'>About us</NavLink>
-                                    {/* <a class="nav-link block pr-2 lg:px-2 py-2 text-white hover:text-white focus:text-white transition duration-150 ease-in-out" href="/about" data-mdb-ripple="true" data-mdb-ripple-color="light">About Us</a> */}
+                                {/* <li class="nav-item flex  text-center bg-[#087f23] pl-3 pr-0 p-1.5 mt-1 mr-3 rounded hover:bg-[#005005]">
+                                <NavLink className='text-white pr-3' to='/about'>About us</NavLink>
                                 </li>
                                 <li class="nav-item mb-2 lg:mb-0 flex text-center bg-[#087f23] pl-3 mt-1 pr-0 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                 <NavLink className='text-white pr-3' to='/contact'>Contact us</NavLink>
-
-                                    {/* <a class="nav-link block pr-2 lg:px-2 py-2 text-white hover:text-white focus:text-white transition duration-150 ease-in-out" href="#!" data-mdb-ripple="true" data-mdb-ripple-color="light">Contact Us</a> */}
-                                </li>
+                                </li> */}
                                 <li class="nav-item mb-2 lg:mb-0 flex text-center bg-[#087f23] pl-3 mt-1 pr-0 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                 <NavLink className='text-white pr-3' onClick={handleLogout} to='/'>Logout</NavLink>
 

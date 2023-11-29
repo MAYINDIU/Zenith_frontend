@@ -9,12 +9,13 @@ const[permissionList,setpermissionList]=useState(['']);
  //Get from localstorage user_details data
  const UserD=JSON.parse(localStorage.getItem("UserDetails"));
  const PERSONAL_ID=UserD?.PERSONALID;
+ const DEPT_CODE=UserD?.DEPT_CODE;
 
 // console.log(permissionList)
 // fetch permission list
 const dept_permission_list = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/permission-list-depthead/${PERSONAL_ID}`);
+      const response = await axios.get(`http://localhost:5000/api/permission-list-depthead/${PERSONAL_ID}/${DEPT_CODE}`);
       setpermissionList(response.data?.permission_list);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -47,10 +48,10 @@ const dept_permission_list = async () => {
                    ACCESS USER
                 </th>
                 <th scope="col" class="px-4 py-3">
-                PERMISSION
+                DEPARTMENT
                 </th>
                 <th scope="col" class="px-4 py-3">
-                CREATED DATE
+                ROLE
                 </th>
                 <th scope="col" class="px-4 py-3">
                 PERMITTED_BY
@@ -67,19 +68,25 @@ const dept_permission_list = async () => {
                  {i+1}
                 </th>
                 <th scope="row" class="px-2 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                 {p_list?.Module_id}
+                 {p_list?.module_name}
                 </th>
                 <td class="px-2 py-3">
-                {p_list?.Access_by}
+                {p_list?.name}
+                </td>
+             
+                <td class="px-2 py-3">
+                {p_list?.dep_name}
                 </td>
                 <td class="px-2 py-3">
-                {p_list?.Previlage_id}
+                <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_read===1?"VIEW":""} </span>
+                <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_create===2?"CREATE":""} </span>
+                <span className='ml-1 text-white bg-[#00838F] rounded p-2'>{p_list?.p_edit===3?"EDIT":"NO"} </span>
+                <span className='ml-1 text-white bg-[#00838F] rounded p-2'>{p_list?.p_delete===4?"DELETE":"NO"}</span>
+
                 </td>
+
                 <td class="px-2 py-3">
-                {p_list?.Created_date}
-                </td>
-                <td class="px-2 py-3">
-                {p_list?.Permitted_by} 
+                {UserD?.NAME +" - "}  {p_list?.permitted_by} 
                 </td>
                 <td class="px-2 py-3">
                     <a href="#" class="font-medium p-2 rounded text-white bg-[#004D40]  dark:text-blue-500 hover:underline">Edit</a>

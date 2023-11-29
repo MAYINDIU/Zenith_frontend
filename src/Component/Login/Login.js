@@ -47,7 +47,8 @@ const login = event => {
                 theme: "colored",
             });
              
-        } else if(error=== 'User not found') {
+        } else 
+        if(error=== 'User not found') {
             // alert('Please type proper user id & pass');
             setSpinner(false);  
             //  toast.error(`Opps!Please type proper emp code & password`);

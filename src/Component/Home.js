@@ -13,6 +13,7 @@ const Home = () => {
   const[total_user,setTotalUser]=useState('');
   const[total_module,setTotalModule]=useState('');
   const[total_dept_head,setDeptHead]=useState('');
+  const[total_desk_user,setDeskuser]=useState('');
   // console.log(total_user)
 
   const dept_name=Dept_head?.department_name;
@@ -77,8 +78,21 @@ const totalDeptHead = async () => {
 useEffect(() => {
   totalDeptHead();
 }, []);
-
 // Total Department head count
+// Total Desk user count
+const totalDeskUser= async () => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/totaldesk-user`);
+    setDeskuser(response.data?.total_user);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+ };
+useEffect(() => {
+  totalDeskUser();
+}, []);
+// Total Desk user count
+
 
      
    
@@ -103,26 +117,43 @@ useEffect(() => {
                  lg:block' src={users} />
             </div>
         
-            <div className=' ml-1  lg:ml-5 mt-3'>
+            <div className=' ml-1  lg:ml-2 mt-3'>
                 <h5 className="text-md lg:text-xl font-bold tracking-tight ">
                 {total_user?.total_user}
                 </h5>
-                <h5 className="font-normal mt-2">
-                TOTAL USERS
+                <h5 className="text-sm mt-2">
+                TOTAL D_HEAD USERS
                 </h5> 
             </div>
             </div>
+
+            <div class=" shadow-md bordered text-white lg:flex rounded p-5 rounded bordered  bg-[#3F83F8] max-w-sm">
+            <div className='justify-center lg:justify-left flex '>
+            <img className='lg:w-20   w-16 shadow-lg bg-white rounded-full p-1 
+                 lg:block' src={users} />
+            </div>
+        
+            <div className=' ml-1  lg:ml-2 mt-3'>
+                <h5 className="text-md lg:text-xl font-bold tracking-tight ">
+                {total_desk_user?.total_user}
+                </h5>
+                <h5 className="text-sm mt-2">
+                TOTAL DESK USERS
+                </h5> 
+            </div>
+            </div>
+
             <div class=" shadow-md bordered text-white lg:flex rounded p-5 rounded bordered  bg-[#3F83F8] max-w-sm">
             <div className='justify-center lg:justify-left flex '>
             <img className='lg:w-20   w-16 shadow-lg bg-white rounded-full p-1 
                  lg:block' src={total_module_icon} />
             </div>
         
-            <div className=' ml-1  lg:ml-5 mt-3'>
+            <div className=' ml-1  lg:ml-2 mt-3'>
                 <h5 className="text-md lg:text-xl font-bold tracking-tight ">
                 {total_module?.total_module}
                 </h5>
-                <h5 className="font-normal mt-2">
+                <h5 className="text-sm mt-2">
                 TOTAL MODULE
                 </h5> 
             </div>
@@ -134,11 +165,11 @@ useEffect(() => {
                  lg:block' src={dept_head} />
             </div>
         
-            <div className=' ml-1  lg:ml-5 mt-3'>
+            <div className=' ml-1  lg:ml-2 mt-3'>
                 <h5 className="text-md lg:text-xl font-bold tracking-tight ">
                 {total_dept_head?.total_depthead} 
                 </h5>
-                <h5 className="font-normal mt-2">
+                <h5 className="text-sm mt-2">
                  DEPT INCHARGE
                 </h5> 
             </div>
@@ -151,33 +182,16 @@ useEffect(() => {
                  lg:block' src={department} />
             </div>
         
-            <div className=' ml-1  lg:ml-5 mt-3'>
+            <div className=' ml-1  lg:ml-2 mt-3'>
                 <h5 className="text-md lg:text-xl font-bold tracking-tight ">
                 {total_dept_head?.total_depthead} 
                 </h5>
-                <h5 className="font-normal mt-2">
+                <h5 className="text-sm mt-2">
                  DEPARTMENT
                 </h5> 
             </div>
             </div>
    
-            <div class=" shadow-md bordered text-white lg:flex rounded p-5 rounded bordered  bg-[#3F83F8] max-w-sm">
-            <div className='justify-center lg:justify-left flex '>
-            <img className='lg:w-20   w-16 shadow-lg bg-white rounded-full p-1 
-                 lg:block' src={info} />
-            </div>
-        
-            <div className=' ml-1  lg:ml-5 mt-3'>
-                <h5 className="text-md lg:text-xl font-bold tracking-tight ">
-                 
-                </h5>
-                <h5 className="font-normal mt-2">
-                 INFORMATION 
-                </h5> 
-            </div>
-            </div>
-
-            
             </div>
             </div>
         </div>
