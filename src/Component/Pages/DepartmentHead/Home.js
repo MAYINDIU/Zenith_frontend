@@ -79,7 +79,7 @@ const ModuleList = async () => {
                 middleCircleColor=""
                 />
               </div>
-              {moduleList.length>1 &&
+              {moduleList.length>=1 &&
              <div class="grid grid-cols-2 mt-5 lg:grid-cols-6 gap-2 flex  justify-center">
               {moduleList?.map((mName, i) => (  
                   <Link key={i}  to={'#'}>
