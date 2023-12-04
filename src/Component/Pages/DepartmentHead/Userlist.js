@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../../Nabar/Navbar';
 import { ThreeCircles } from 'react-loader-spinner';
+import { Link } from 'react-router-dom';
 
 const Userlist = () => {
 
@@ -106,7 +107,9 @@ const dept_permission_list = async () => {
                               {UserD?.NAME +" - "}  {p_list?.permitted_by} 
                               </td>
                               <td class="px-2 py-3">
-                                  <a href="#" class="font-medium p-2 rounded text-white bg-[#004D40]  dark:text-blue-500 hover:underline">Edit</a>
+                                <Link to={`/permission-update=${p_list?.access_by}=${p_list?.module_id}`}>
+                                <a href="#" class="font-medium p-2 rounded text-white bg-[#004D40]  dark:text-blue-500 hover:underline">Edit</a>
+                                    </Link>  
                                   <a href="#" class="font-medium p-2 rounded ml-3 text-white bg-[#BF360C]  dark:text-blue-500 hover:underline">Delete</a>
                               </td>
                           </tr>

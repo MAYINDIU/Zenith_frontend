@@ -9,7 +9,6 @@ import Userlist from './Userlist';
 const Modulelist = () => {
 const[moduleList,setModueleList]=useState(['']);
 const[userList,setUserList]=useState([]);
-const[previlageList,setPrevilagelsit]=useState(['']);
 const [spinner, setSpinner] = useState(false); 
 const [user_id,setUser]=useState('');
 const [module_id,setModuleName]=useState('');
@@ -25,6 +24,7 @@ console.log(userList)
  const PERSONAL_ID=UserD?.PERSONALID;
 
   const DEPT_CODE=UserD?.DEPT_CODE;
+  console.log(DEPT_CODE)
 // fetch permitted dept-head module list
 const ModuleList = async () => {
      setSpinner(true)
@@ -62,22 +62,7 @@ const PrevList = async () => {
 // fetch userlist module list
 
 
-// fetch PrevilageList  list
-const PrevilageList = async () => {
-     setSpinner(true)
-    try {
-      const response = await axios.get(`http://localhost:5000/api/previlage-list`);
-      setPrevilagelsit(response.data?.previlage_list);
-      setSpinner(false); 
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
-  useEffect(() => {
-    PrevilageList();
-  }, []);
-// fetch PrevilageList  list
 
 const [selectedPrivileges, setSelectedPrivileges] = useState([]);
 
@@ -146,6 +131,8 @@ if (addPermission === 'Permission Successfully') {
          <Navbar/>
          <h1 className='shadow-lg w-1/3 mx-auto p-3 mt-5 font-bold rounded text-center'>MODULE PERMISSION DEPARTMENT HEAD TO DESK USER</h1>
          <h1 className='mt-5 text-green-700'>{addPermission}</h1>
+         <h2>Selected User:{user_id}-Selected Role:{selectedPrivileges} </h2>
+
          <div className="flex justify-center mb-2 ">
                 <ThreeCircles
                 height="60"
@@ -171,8 +158,8 @@ if (addPermission === 'Permission Successfully') {
                   <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
                   {moduleList?.map((modulename, i) => (
                   <div class="flex items-center ps-2  rounded dark:border-gray-700">
-                    <input id="bordered-checkbox-1" onChange={(e) => setModuleName(e.target.value)} type="checkbox" value={modulename?.Module_id} name="bordered-checkbox" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
+                    <input id="mod_name" onChange={(e) => setModuleName(e.target.value)} type="checkbox" value={modulename?.Module_id} name="mod_name" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                    <label for="mod_name" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
                     </div>
                   ))}
                  </div>
@@ -188,89 +175,88 @@ if (addPermission === 'Permission Successfully') {
 
                   {userList?.map((user, i) => (
                     <div class="flex items-center ps-2  rounded dark:border-gray-700">
-                       <input  onChange={(e) => setUser(e.target.value)} id="bordered-checkbox-1" type="checkbox" value={user?.personal_id} name="bordered-checkbox" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{user?.name}</label>
+                       <input  onChange={(e) => setUser(e.target.value)} id="y" type="checkbox" value={user?.personal_id} name="y" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                    <label for="y" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{user?.name}</label>
                     </div>
               
                   ))}
                   </div>
                
                
-                <div>
+                  <div>
                 {userList?.map((prev, i) => (
-              <div key={i} class="flex items-center ps-2  rounded dark:border-gray-700">
-              <input
-                  onChange={(e) => handlePrivilegeChange(e, prev?.p_read===1?1:prev?.p_read==='null'?1:1)}
-                  id={`bordered-checkbox-${i}`}
-                  type="checkbox"
-                  value={prev?.p_read}
-                  name="bordered-checkbox"
-                  checked={selectedPrivileges.includes(prev?.p_read===1?1:prev?.p_read==='null'?1:1)}
-                  className=" w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <label
-                  htmlFor={`bordered-checkbox-${i}`}
-                  className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
-              >
-                    {prev?.p_read===1?"READ":"NO"}
-              </label>
+                  <div key={i} className="flex items-center ps-2 rounded dark:border-gray-700">
+
+                    <input
+                      onChange={(e) => handlePrivilegeChange(e, prev?.p_read === 1 ? 1 : 1)}
+                      id={`z-${i}-read`}
+                      type="checkbox"
+                      value={prev?.p_read}
+                      name="z"
+                      checked={!!prev?.p_read} // Check if p_read is truthy
+                      className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`z-${i}-read`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {prev?.p_read ? "READ" : "READ"}
+                    </label>
+
+                    <input
+                      onChange={(e) => handlePrivilegeChange(e, prev?.p_create === 2 ? 2 : 2)}
+                      id={`z-${i}-create`}
+                      type="checkbox"
+                      value={prev?.p_create}
+                      name="z"
+                      checked={!!prev?.p_create} // Check if p_create is truthy
+                      className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`z-${i}-create`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {prev?.p_create ? "CREATE" : "CREATE"}
+                    </label>
+
+                    <input
+                      onChange={(e) => handlePrivilegeChange(e, prev?.p_edit === 3 ? 3 : 3)}
+                      id={`bordered-checkbox-${i}-edit`}
+                      type="checkbox"
+                      value={prev?.p_edit}
+                      name="bordered-checkbox"
+                      checked={!!prev?.p_edit} // Check if p_edit is truthy
+                      className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`bordered-checkbox-${i}-edit`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {prev?.p_edit ? "EDIT" : "EDIT"}
+                    </label>
+
+                    <input
+                      onChange={(e) => handlePrivilegeChange(e, prev?.p_delete === 4 ? 4 : 4)}
+                      id={`bordered-checkbox-${i}-delete`}
+                      type="checkbox"
+                      value={prev?.p_delete}
+                      name="bordered-checkbox"
+                      checked={!!prev?.p_delete} // Check if p_delete is truthy
+                      className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`bordered-checkbox-${i}-delete`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {prev?.p_delete ? "DELETE" : "DELETE"}
+                    </label>
 
 
-              <input
-                  onChange={(e) => handlePrivilegeChange(e, prev?.p_create===2?2:prev?.p_create==='null'?2:2)}
-                  id={`bordered-checkbox-${i}`}
-                  type="checkbox"
-                  value={prev?.p_create===2?2:prev?.p_create==='null'?2:2}
-                  name="bordered-checkbox"
-                  checked={selectedPrivileges.includes(prev?.p_create===2?2:prev?.p_create==='null'?2:2)}
-                  className=" w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <label
-                  htmlFor={`bordered-checkbox-${i}`}
-                  className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
-              >
-                {prev?.p_create===2?"CREATE":"NO"}
-              </label>
-
-
-              <input
-                  onChange={(e) => handlePrivilegeChange(e, prev?.p_edit===3?3:prev?.p_edit==='null'?3:3)}
-                  id={`bordered-checkbox-${i}`}
-                  type="checkbox"
-                  value={prev?.p_edit===3?3:prev?.p_edit==='null'?3:3}
-                  name="bordered-checkbox"
-                  checked={selectedPrivileges.includes(prev?.p_edit===3?3:prev?.p_edit==='null'?3:3)}
-                  className=" w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <label
-                  htmlFor={`bordered-checkbox-${i}`}
-                  className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
-              >
-                {prev?.p_edit===3?"EDIT":"NO"}
-              </label>
-
-              <input
-                  onChange={(e) => handlePrivilegeChange(e, prev?.p_delete===4?4:prev?.p_delete==='null'?4:4)}
-                  id={`bordered-checkbox-${i}`}
-                  type="checkbox"
-                  value={prev?.p_delete===4?4:prev?.p_delete==='null'?4:4}
-                  name="bordered-checkbox"
-                  checked={selectedPrivileges.includes(prev?.p_delete===4?4:prev?.p_delete==='null'?4:4)}
-                  className=" w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-              />
-              <label
-                  htmlFor={`bordered-checkbox-${i}`}
-                  className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
-              >
-                {prev?.p_delete===4?"DELETE":"NO"}
-              </label>
-
-              </div>
-                ))}
-
-
-
+                  </div>
+                  ))}
                 </div>
+                
+
 
          
             
@@ -283,7 +269,7 @@ if (addPermission === 'Permission Successfully') {
 
                 <div className='w-80 rounded-md flex  justify-center mx-auto'>
                 <Button  onClick={permissionAdd}  type='submit' color="success">Add Permission</Button>
-                <div  className='ml-2 w-80' ><Button  type='submit' color="failure">Delete Permission</Button></div> 
+                {/* <div  className='ml-2 w-80' ><Button  type='submit' color="failure">Delete Permission</Button></div>  */}
                 </div>
               </form>
 

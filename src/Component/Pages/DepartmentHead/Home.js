@@ -54,6 +54,8 @@ const ModuleList = async () => {
         <div className=''>
             <Navbar/>
             <h1 className='mt-5'>Welcome To Department Head Panel</h1>
+
+  
       
             <div className='p-2 lg:p-5 lg:px-48'>
             <div className=' shadow p-3 w-full lg:w-1/4 mt-5 mx-auto lg:p-3  rounded-lg text-center'>

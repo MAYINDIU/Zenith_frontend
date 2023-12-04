@@ -21,6 +21,7 @@ import Contact from './Component/Contact';
 import Module from './Component/ModuleList/Module';
 import Permission from './Component/Permission/Permission';
 import Requireauth from './Component/PrivateRoute/Requireauth';
+import SinglePermission from './Component/Pages/DepartmentHead/SinglePermission';
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
             <Route path='/department-head' element={<Requireauth><DepartmentHeadHome/></Requireauth>}>Department Head Home</Route>
             <Route path='/module-list' element={<Requireauth><ModuleList/></Requireauth>}>Department Head permitted module list</Route>
             <Route path='/permission-user-list' element={<Requireauth><DepartmentUserlist /></Requireauth>}>Department All user</Route>
+            <Route path='/permission-update=:id=:name' element={<Requireauth><SinglePermission /></Requireauth>}>Permission update</Route>
 
             {/* Department Head */}
 
