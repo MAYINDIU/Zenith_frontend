@@ -16,11 +16,11 @@ const [sinnglePermission,setSinglePermission]=useState('');
 const [module_id,setModuleName]=useState('');
 const [previlage_id,setPrevilage]=useState('');
 const [addPermission,setAddpermission]=useState('');
-console.log(user_id,module_id,previlage_id)
+// console.log(user_id,module_id)
 const navigate=useNavigate();
 
-console.log(userList);
-console.log(sinnglePermission)
+// console.log(userList);
+// console.log(sinnglePermission)
 
  //Get from localstorage user_details data
  const UserD=JSON.parse(localStorage.getItem("UserDetails"));
@@ -48,26 +48,24 @@ const ModuleList = async () => {
 
 // fetch userlist module list
 const PrevList = async () => {
-    try {
-      const response = await axios.get(`http://localhost:5000/api/privilage-list/${module_id}/${DEPT_CODE}`);
-      setUserList(response.data?.privilage_list);
-      setSpinner(false); 
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  try {
+    const response = await axios.get(`http://localhost:5000/api/privilage-list/${module_id}/${DEPT_CODE}`);
+    setUserList(response.data?.privilage_list);
+    setSpinner(false); 
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 
-  useEffect(() => {
-    if (module_id && DEPT_CODE) {
-      PrevList();
-    }
-  }, [module_id, DEPT_CODE]);
+useEffect(() => {
+  if (module_id && DEPT_CODE) {
+    PrevList();
+  }
+}, [module_id, DEPT_CODE]);
+
 // fetch userlist module list
 
 const [selectedPrivileges, setSelectedPrivileges] = useState([]);
-
-console.log(selectedPrivileges)
-
 const handlePrivilegeChange = (e, privilegeId) => {
     const checked = e.target.checked;
   
@@ -119,11 +117,51 @@ const permissionAdd = (event) => {
   }
 }
 
+const [sUserId, setSUserId] = useState(null);
+const [sPrevId, setSPrevId] = useState(null);
+const [permittype, setPermitType] = useState(null);
+const [isSubscribed, setIsSubscribed] = useState(false);
+
+const handleChange = event => {
+  const selectData = event.target.value;
+  let sData;
+
+  if (event.target.checked) {
+    sData = selectData + "_A";
+    alert(sData);
+  } else {
+    sData = selectData + "_D";
+    alert(sData);
+  }
+
+  // Split sData into two parts based on underscore
+  const [userId, prevId, type] = sData.split('_');
+  setSUserId(userId);
+  setSPrevId(prevId);
+  setPermitType(type);
+
+  setIsSubscribed(current => !current);
+};
+
+// Rest of your component...
+
+// You can now use sUserId, sPrevId, and permittype throughout your component
+console.log('sUserId:', sUserId);
+console.log('sPrevId:', sPrevId);
+console.log('permittype:', permittype);
+      
+
+     
+     // after select data delete or new add
+
+
+
 const permissionAdded = (event) => {
   const MODULE_ID = module_id;
-  const ACCESS_BY = user_id;
+  const ACCESS_BY = sUserId;
   const PERMITTED_BY = PERSONAL_ID;
-  const PERMIT="D";
+  const PERMIT=permittype;
+  const PRIVILAGE_ID=sPrevId;
 
   if (MODULE_ID === "") {
     alert('Please Select Module');
@@ -133,7 +171,7 @@ const permissionAdded = (event) => {
     const permissions ={
       MODULE_ID,
       ACCESS_BY,
-      PRIVILAGE_ID: previd,
+      PRIVILAGE_ID,
       PERMITTED_BY,
       PERMIT
     };
@@ -154,12 +192,12 @@ const permissionAdded = (event) => {
   }
 }
 
-// useEffect(() => {
-//   // Check if previd is 1 or truthy
-//   if (previd === '1' || previd === '2' || previd === '3' || previd === '4' ) {
-//     permissionAdded();
-//   }
-// }, [previd]);
+useEffect(() => {
+  // Check if previd is 1 or truthy
+  if (sPrevId === '1' || sPrevId === '2' || sPrevId === '3' || sPrevId === '4' ) {
+    permissionAdded();
+  }
+}, [sPrevId]);
 
 
 if (addPermission ==="Permission Successfully") {
@@ -195,43 +233,26 @@ alert('vai amr ghum vangce');
 // console.log('Permit:', permit);
       // Assuming response.data?.permission_list is an array of objects
 
-      if(sinnglePermission){
-        const permission = sinnglePermission?.find(item => item?.module_id === moduleNumber);
+      // if(sinnglePermission){
+      //   const permission = sinnglePermission?.find(item => item?.module_id === moduleNumber);
   
-        // Check if the permission is found
-        if (permission) {
-          const p_read = permission?.p_read;
-          const p_create = permission?.p_create;
-          const p_edit = permission?.p_edit;
-          const p_delete = permission?.p_delete;
+      //   // Check if the permission is found
+      //   if (permission) {
+      //     const p_read = permission?.p_read;
+      //     const p_create = permission?.p_create;
+      //     const p_edit = permission?.p_edit;
+      //     const p_delete = permission?.p_delete;
         
-          console.log('p_read:', p_read);
-          console.log('p_create:', p_create);
-          console.log('p_edit:', p_edit);
-          console.log('p_delete:', p_delete);
-        } else {
-          console.log('Permission not found for the specified module_id.');
-        }
-      }
+      //     console.log('p_read:', p_read);
+      //     console.log('p_create:', p_create);
+      //     console.log('p_edit:', p_edit);
+      //     console.log('p_delete:', p_delete);
+      //   } else {
+      //     console.log('Permission not found for the specified module_id.');
+      //   }
+      // }
    
 
-      const [isSubscribed, setIsSubscribed] = useState(false);
-
-      const handleChange = event => {
-
-        const test=(event.target.value);
-        
-              
-
-        if (event.target.checked) {
-          
-         alert(test+"_A")
-         
-        } else {
-          alert(test+"_D")
-        }
-        setIsSubscribed(current => !current);
-      };
 
 
 
@@ -299,7 +320,8 @@ alert('vai amr ghum vangce');
                     type="checkbox"
                     value={`${prev?.personal_id}_1`}
                     name="bordered-checkbox"
-                    defaultChecked={prev?.p_read===1?true:false}
+                    checked={prev?.p_read===1}
+                    // defaultChecked={prev?.p_read===1?true:false}
                     className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                    />
 
@@ -316,7 +338,8 @@ alert('vai amr ghum vangce');
                       type="checkbox"
                       value={`${prev?.personal_id}_2`}
                       name="bordered-checkbox"
-                      defaultChecked={prev?.p_create===2?true:false}
+                      checked={prev?.p_create===2}
+                      // defaultChecked={prev?.p_create===2?true:false}
                       className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
@@ -332,7 +355,8 @@ alert('vai amr ghum vangce');
                       type="checkbox"
                       value={`${prev?.personal_id}_3`}
                       name="bordered-checkbox"
-                      defaultChecked={prev?.p_edit===3?true:false}
+                      checked={prev?.p_edit===3}
+                      // defaultChecked={prev?.p_edit===3?true:false}
                       className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
@@ -348,7 +372,9 @@ alert('vai amr ghum vangce');
                       type="checkbox"
                       value={`${prev?.personal_id}_4`}
                       name="bordered-checkbox"
-                      defaultChecked={prev?.p_delete===4?true:false}
+                      checked={prev?.p_delete===4?true:false}
+
+                      // defaultChecked={prev?.p_delete===4?true:false}
                       className="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
