@@ -5,8 +5,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import logo from '../../assets/icon/jenith.png';
 import axios from "axios";
 import { ThreeCircles } from 'react-loader-spinner';
-import { toast } from 'react-toastify';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import swal from 'sweetalert';
 const Permission = () => {
  const [deptHeadList,setDeptHeadList]=useState([]);
  const [moduleList,setModuleList]=useState([]);
@@ -15,6 +16,8 @@ const Permission = () => {
  const [addPermission,setAddpermission]=useState('');
  const [spinner, setSpinner] = useState(false); 
  const [selectdept,setselectdept]=useState('');
+ const [permissionType,setPermissionType]=useState('');
+console.log(permissionType)
  const { id,name} = useParams();
 const navigate=useNavigate();
 
@@ -25,6 +28,11 @@ const user_information=JSON.parse(localStorage.getItem('UserDetails'));
 const PERSONAL_ID=user_information?.PERSONALID;
 
 
+const showToastMessage = () => {
+  toast.success("Success Notification !", {
+    position: toast.POSITION.TOP_RIGHT,
+  });
+};
 // fetch all department head data
   const deptHeadData = async () => {
     setSpinner(true)
@@ -122,6 +130,10 @@ const permissionAdd = (event) => {
 }
 
 if (addPermission === 'Permission Successfully') {
+  swal({
+    title: "Permission Successfully",
+    icon: "success",
+  });
   navigate('/user-list');
 }
 
@@ -144,61 +156,94 @@ if (addPermission === 'Permission Successfully') {
                 middleCircleColor=""
                 />
               </div>
-         <div >
-             <div class=" w-full lg:w-[1200px] justify-center lg:mx-auto lg:mt-2">
-            <div class="block shadow-xl lg:w-full  bordered rounded p-3 lg:p-5 rounded-xl border-gray bordered-sm bg-white">
-            <form  className="flex  flex-col gap-4">
-                <div class="p-2 grid grid-cols-1 mt-2 lg:grid-cols-2 gap-5">
-                <div className='lg:w-full w-full'>
-                  {/* <select className="form-input mt-2 w-full shadow rounded"   onChange={(e) => setModuleName(e.target.value)} >
-                  <option>Select Module</option>
-                  {moduleList?.map((modulename, i) => (
-                     <option value={modulename?.Module_id}>{modulename?.Module_name}</option>
-                    ))}
-                  </select> */}
-                  <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
-                  <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
-                
-                  {moduleList?.map((modulename, i) => (
-                  <div class="flex items-center ps-2  rounded dark:border-gray-700">
-                    <input id="bordered-checkbox-1" onChange={(e) => setModuleName(e.target.value)} type="checkbox" value={modulename?.Module_id} name="bordered-checkbox" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
-                    </div>
-              
-                  ))}
-                 </div>
-               </div>
-              
-                <div className='lg:w-full w-full'>
-                  {/* <select className="form-input mt-2 w-full shadow rounded"   onChange={(e) => setDepartmentName(e.target.value)} >
-                  <option>Select Department</option>
-                  {deptHeadList?.map((headname, i) => (
-                     <option value={headname?.dept_head_id}>{headname?.department_name}</option>
-                    ))}
-                  </select> */}
-                  <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT DEPARTMENT</h1>
+              <div class="p-2 grid grid-cols-1 shadow-md rounded   mt-0 lg:grid-cols-2 gap-0  w-full lg:w-[650px] justify-center lg:mx-auto lg:mt-2">
+              <div class="flex items-center ps-2  rounded dark:border-gray-700">
+              <input id="mod_name" onChange={(e) => setPermissionType(e.target.value)} type="checkbox" 
+              value={1} name="mod_name" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+              <label for="mod_name" class="w-full py-1 ml-2 text-left ms-2 text-lg font-sm text-dark dark:text-gray-300">DEPARTMENT WISE PERMISSION</label>
+              </div>
+                  
+              <div class="flex items-center ps-2  rounded dark:border-gray-700">
+              <input id="mod_name" onChange={(e) => setPermissionType(e.target.value)} type="checkbox" 
+              value={2} name="mod_name" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+              <label for="mod_name" class="w-full py-1 ml-2 text-left ms-2 text-lg font-sm text-dark dark:text-gray-300">ROLE WISE PERMISSION</label>
+             </div>
+         
+                 
+             </div>
+
+             {permissionType==="1" &&
+              <div >
+              <div class=" w-full lg:w-[1200px] justify-center lg:mx-auto lg:mt-2">
+             <div class="block shadow-xl lg:w-full  bordered rounded p-3 lg:p-5 rounded-xl border-gray bordered-sm bg-white">
+             <form  className="flex  flex-col gap-4">
+                 <div class="p-2 grid grid-cols-1 mt-2 lg:grid-cols-2 gap-5">
+                 <div className='lg:w-full w-full'>
+                   {/* <select className="form-input mt-2 w-full shadow rounded"   onChange={(e) => setModuleName(e.target.value)} >
+                   <option>Select Module</option>
+                   {moduleList?.map((modulename, i) => (
+                      <option value={modulename?.Module_id}>{modulename?.Module_name}</option>
+                     ))}
+                   </select> */}
+                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
                    <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
-                  {deptHeadList?.map((headname, i) => (
-                  <div class="flex items-center ps-2  rounded dark:border-gray-700">
-                    <input  onChange={(e) => setDepartmentName(e.target.value)} id="bordered-checkbox-1" type="checkbox" value={headname?.dept_head_id} name="bordered-checkbox" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{headname?.department_name}</label>
-                    </div>
-              
-                  ))}
+                 
+                   {moduleList?.map((modulename, i) => (
+                   <div class="flex items-center ps-2  rounded dark:border-gray-700">
+                     <input id="bordered-checkbox-1" onChange={(e) => setModuleName(e.target.value)} type="checkbox" value={modulename?.Module_id} name="bordered-checkbox" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                     <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
+                     </div>
+               
+                   ))}
+                  </div>
+                </div>
+               
+                 <div className='lg:w-full w-full'>
+                   {/* <select className="form-input mt-2 w-full shadow rounded"   onChange={(e) => setDepartmentName(e.target.value)} >
+                   <option>Select Department</option>
+                   {deptHeadList?.map((headname, i) => (
+                      <option value={headname?.dept_head_id}>{headname?.department_name}</option>
+                     ))}
+                   </select> */}
+                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT DEPARTMENT</h1>
+                    <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
+                   {deptHeadList?.map((headname, i) => (
+                   <div class="flex items-center ps-2  rounded dark:border-gray-700">
+                     <input  onChange={(e) => setDepartmentName(e.target.value)} id="bordered-checkbox-1" type="checkbox" value={headname?.dept_head_id} name="bordered-checkbox" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                     <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{headname?.department_name}</label>
+                     </div>
+               
+                   ))}
+                  </div>
+                </div>
+ 
+ 
                  </div>
-               </div>
-
-
-                </div>
-                <div className='w-80 rounded-md flex  justify-center mx-auto'>
-                <Button onClick={permissionAdd}  type='submit' color="success">Add Permission</Button>
-                <div  className='ml-2 w-80' ><Button  type='submit' color="failure">Delete Permission</Button></div> 
-                </div>
-            
-                </form>
-            </div>
-            </div>
-        </div>
+                 <div className='w-80 rounded-md flex  justify-center mx-auto'>
+                 <Button onClick={permissionAdd}  type='submit' color="success">Add Permission</Button>
+                 <div  className='ml-2 w-80' ><Button  type='submit' color="failure">Delete Permission</Button></div> 
+                 </div>
+             
+                 </form>
+             </div>
+             </div>
+         </div>
+             }
+  
+        
+        <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        type="warning"
+      />
        </div>
 
     );

@@ -94,8 +94,6 @@ useEffect(() => {
 // Total Desk user count
 
 
-     
-   
     return (
         <div>
             <Navbar/>
@@ -194,6 +192,7 @@ useEffect(() => {
    
             </div>
             </div>
+
         </div>
     );
 };

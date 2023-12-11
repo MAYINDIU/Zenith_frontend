@@ -2,8 +2,10 @@ import { Button, Checkbox, Label, TextInput } from 'flowbite-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/icon/jenith.png';
-import { ToastContainer, toast } from 'react-toastify';
 import { Circles, ThreeCircles } from 'react-loader-spinner';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import swal from 'sweetalert';
 // import 'react-toastify/dist/ReactToastify.css';
 const Login = () => {
 
@@ -42,11 +44,11 @@ const login = event => {
 
     useEffect(() => {
         if (ROLE_ID===0) {
-            navigate(`/dashboard`);
-            toast.success("Login Successfully", {
-                theme: "colored",
-            });
-             
+            swal({
+                title: "Login Successfully",
+                icon: "success",
+              });
+            navigate(`/dashboard`);    
         } else 
         if(error=== 'User not found') {
             // alert('Please type proper user id & pass');
@@ -123,10 +125,22 @@ const login = event => {
                   <Button   type='submit' color="success">Login</Button>
                
                 </form>
-                <ToastContainer />
+             
             </div>
 
-     
+            <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        type="warning"
+      />
             </div>
         </div>
     );

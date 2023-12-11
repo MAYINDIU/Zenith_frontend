@@ -96,8 +96,8 @@ const dept_permission_list = async () => {
                               {p_list?.dep_name}
                               </td>
                               <td class="px-2 py-3">
-                              <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_read===1?"VIEW":""} </span>
-                              <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_create===2?"CREATE":""} </span>
+                              <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_read===1?"VIEW":"NO"} </span>
+                              <span className='ml-1 text-white bg-[#00838F] rounded p-2'> {p_list?.p_create===2?"CREATE":"NO"} </span>
                               <span className='ml-1 text-white bg-[#00838F] rounded p-2'>{p_list?.p_edit===3?"EDIT":"NO"} </span>
                               <span className='ml-1 text-white bg-[#00838F] rounded p-2'>{p_list?.p_delete===4?"DELETE":"NO"}</span>
       
