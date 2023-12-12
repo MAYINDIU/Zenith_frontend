@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../Nabar/Navbar';
-import { Button, Checkbox, Dropdown, Label, TextInput } from 'flowbite-react';
+import { Button, Checkbox, Dropdown, Label, Radio, TextInput } from 'flowbite-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import logo from '../../assets/icon/jenith.png';
 import axios from "axios";
@@ -157,17 +157,14 @@ if (addPermission === 'Permission Successfully') {
                 />
               </div>
               <div class="p-2 grid grid-cols-1 shadow-md rounded   mt-0 lg:grid-cols-2 gap-0  w-full lg:w-[650px] justify-center lg:mx-auto lg:mt-2">
-              <div class="flex items-center ps-2  rounded dark:border-gray-700">
-              <input id="mod_name" onChange={(e) => setPermissionType(e.target.value)} type="checkbox" 
-              value={1} name="mod_name" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-              <label for="mod_name" class="w-full py-1 ml-2 text-left ms-2 text-lg font-sm text-dark dark:text-gray-300">DEPARTMENT WISE PERMISSION</label>
-              </div>
-                  
-              <div class="flex items-center ps-2  rounded dark:border-gray-700">
-              <input id="mod_name" onChange={(e) => setPermissionType(e.target.value)} type="checkbox" 
-              value={2} name="mod_name" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-              <label for="mod_name" class="w-full py-1 ml-2 text-left ms-2 text-lg font-sm text-dark dark:text-gray-300">ROLE WISE PERMISSION</label>
-             </div>
+              <div className="flex items-center gap-2">
+              <Radio onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={1}  />
+              <Label htmlFor="permission">USER WISE PERMISSION</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={2}  />
+              <Label htmlFor="permission">ROLE WISE PERMISSION</Label>
+            </div>
          
                  
              </div>
@@ -189,10 +186,11 @@ if (addPermission === 'Permission Successfully') {
                    <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
                  
                    {moduleList?.map((modulename, i) => (
-                   <div class="flex items-center ps-2  rounded dark:border-gray-700">
-                     <input id="bordered-checkbox-1" onChange={(e) => setModuleName(e.target.value)} type="checkbox" value={modulename?.Module_id} name="bordered-checkbox" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                     <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
-                     </div>
+               <div key={i} className="flex items-center gap-2">
+               <Radio onChange={(e) => setModuleName(e.target.value)} id="permission" name="countries"
+               value={modulename?.Module_id}  />
+               <Label htmlFor="permission">{modulename?.Module_name}</Label>
+               </div>
                
                    ))}
                   </div>

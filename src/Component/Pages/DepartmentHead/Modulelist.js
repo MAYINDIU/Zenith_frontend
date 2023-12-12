@@ -6,9 +6,10 @@ import swal from 'sweetalert';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../Nabar/Navbar';
 import { ThreeCircles } from 'react-loader-spinner';
-import { Button, Toast } from 'flowbite-react';
+import { Button, Label, Radio, Toast } from 'flowbite-react';
 import Userlist from './Userlist';
 import {useCreatePermissionMutation, useGetProjectPrevlistQuery, useGetRolePrevlistQuery, useGetUserprivilagelistQuery } from '../../../features/api/dept_head_api';
+import { clear } from '@testing-library/user-event/dist/clear';
 
 const Modulelist = () => {
 const[moduleList,setModueleList]=useState(['']);
@@ -55,74 +56,25 @@ const [sUserId, setSUserId] = useState(null);
 const [sPrevId, setSPrevId] = useState(null);
 const [permittype, setPermitType] = useState(null);
 const [isSubscribed, setIsSubscribed] = useState(false);
-const handleChange = event => {
+
+
+const handleChange = (event) => {
   const selectData = event.target.value;
   let sData;
-
   if (event.target.checked) {
     sData = selectData + "_A";
-    console.log(sData)
-    // alert(sData);
+    
   } else {
     sData = selectData + "_D";
-    console.log(sData)
-    // alert(sData);
+   
   }
 
-  // Split sData into two parts based on underscore
   const [userId, prevId, type] = sData.split('_');
   setSUserId(userId);
   setSPrevId(prevId);
   setPermitType(type);
 
-  setIsSubscribed(current => !current);
 };
-
-const userPermissionAdded = (event) => {
-
-  const MODULE_ID = module_id;
-  const ACCESS_BY = sUserId;
-  const PERMITTED_BY = PERSONAL_ID;
-  const PROCESS=permittype;
-  const TYPE=permissionType;
-  const PRIVILAGE_ID=sPrevId;
-  if (MODULE_ID === "") {
-    alert('Please Select Module');
-  } else if (ACCESS_BY === "") {
-    alert('Please Select Access user');
-  }  else {
-    const permissions ={
-      MODULE_ID,
-      ACCESS_BY,
-      PRIVILAGE_ID,
-      PERMITTED_BY,
-      PROCESS,
-      TYPE
-    };
-
-    console.log(permissions);
-
-    const url = 'http://localhost:5000/api/create-permission-new';
-    setSpinner(true)
-    fetch(url, {
-      method: "POST",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "content-type": "application/json"
-      },
-      body: JSON.stringify(permissions)
-    })
-      .then(Response => Response.json())
-      .then(data => setAddpermission(data));
-      setSpinner(false)
-  }
-}
-useEffect(() => {
-  // Check if previd is 1 or truthy
-  if (sPrevId === '1' || sPrevId === '2' || sPrevId === '3' || sPrevId === '4' ) {
-    handleCreateUser();
-  }
-}, [sPrevId]);
 
 const [createPermission, { data: permission, error: permissionError, isSuccess }] = useCreatePermissionMutation();
 // Create a new user
@@ -148,19 +100,36 @@ const handleCreateUser = (e) => {
     TYPE,
   };
 
+  console.log(permissions)
   createPermission(permissions)
     .then((data) => {
-      // Handle the successful response data
-      // console.log('Permission created successfully:', data);
+
     })
     .catch((error) => {
       // Handle the error
       console.error('Error creating permission:', error);
 
-      // You can display an error message to the user if needed
-    
     });
 };
+
+useEffect(() => {
+  // Check if sPrevId is not null before calling handleCreateUser
+
+ if(sPrevId!==null){
+const done = async () => {
+await  handleCreateUser();
+setSUserId(null);
+setSPrevId(null);
+setPermitType(null);
+};
+done();
+
+ }
+
+
+ 
+}, [sPrevId]);
+
 
 
 if (addPermission === "Permission Successfully") {
@@ -206,26 +175,20 @@ useEffect(() => {
          <h1 className='shadow-lg lg:w-1/3 mx-auto p-3 mt-5 font-bold rounded text-center'>MODULE PERMISSION DEPARTMENT HEAD TO DESK USER</h1>
          <h1 className='mt-5 text-green-700'>{addPermission}</h1>
   
-
-               
-              <div class="p-2 grid grid-cols-1 shadow-md rounded   mt-0 lg:grid-cols-3 gap-0  w-full lg:w-[800px] justify-center lg:mx-auto lg:mt-2">
-              <div class="flex items-center ps-2  rounded dark:border-gray-700">
-              <input  onChange={(e) => setPermissionType(e.target.value)} type="checkbox" 
-              value={'USER'}  class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-              <label  class="w-full py-1 ml-2 text-left ms-2 text-lg font-sm text-dark dark:text-gray-300">USER WISE PERMISSION</label>
-              </div>
-                  
-              <div class="flex items-center ps-2  rounded dark:border-gray-700">
-              <input  onChange={(e) => setPermissionType(e.target.value)} type="checkbox" 
-              value={'ROLE'}  class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-              <label  class="w-full py-1 ml-2 text-left ms-2 text-lg font-sm text-dark dark:text-gray-300">ROLE WISE PERMISSION</label>
-             </div>
-             <div class="flex items-center ps-2  rounded dark:border-gray-700">
-              <input  onChange={(e) => setPermissionType(e.target.value)} type="checkbox" 
-              value={'PROJECT'}  class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-              <label  class="w-full py-1 ml-2 text-left ms-2 text-lg font-sm text-dark dark:text-gray-300">PROJECT WISE PERMISSION</label>
-             </div>
-                 
+              <div class="p-4 grid grid-cols-1 shadow-md rounded   mt-0 lg:grid-cols-3 gap-0  w-full lg:w-[800px] justify-center lg:mx-auto lg:mt-2">
+              <div className="flex items-center gap-2">
+              <Radio onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={'USER'}  />
+              <Label htmlFor="permission">USER WISE PERMISSION</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={'ROLE'}  />
+              <Label htmlFor="permission">ROLE WISE PERMISSION</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Radio onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={'PROJECT'}  />
+              <Label htmlFor="permission">PROJECT WISE PERMISSION</Label>
+            </div>
+ 
              </div>
      
              <div className="flex justify-center mb-2 ">
@@ -254,11 +217,11 @@ useEffect(() => {
                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
                   <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
                   {moduleList?.map((modulename, u) => (
-                  <div key={u} class="flex items-center ps-2  rounded dark:border-gray-700">
-                    <input  onChange={(e) => setModuleName(e.target.value)} type="checkbox" 
-                    value={modulename?.Module_id}  class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label  class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
-                    </div>
+                  <div key={u} className="flex items-center gap-2">
+                  <Radio onChange={(e) => setModuleName(e.target.value)} id="permission" name="countries"
+                  value={modulename?.Module_id}  />
+                  <Label htmlFor="permission">{modulename?.Module_name}</Label>
+                  </div>
                   ))}
                  </div>
                </div>
@@ -281,13 +244,13 @@ useEffect(() => {
                     
                     <div key={u} className="flex items-center ps-2 rounded dark:border-gray-700">
                     <input
-                     onChange={handleChange}
+                    onClick={handleChange}
                     id={`bordered-checkbox-${u}-u-read`}
                     type="checkbox"
                     value={`${prev?.personal_id}_1`}
                     name="bordered-checkbox"
                     checked={prev?.p_read===1}
-                    // defaultChecked={prev?.p_read===1?true:false}
+                    // defaultChecked={prev?.p_read === 1 ?? false}
                     className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                    />
 
@@ -378,12 +341,12 @@ useEffect(() => {
                 <div className='lg:w-full w-full'>
                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
                   <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
-                  {moduleList?.map((modulename, i) => (
-                  <div key={i} class="flex items-center ps-2  rounded dark:border-gray-700">
-                    <input  onChange={(e) => setModuleName(e.target.value)} type="checkbox" 
-                    value={modulename?.Module_id}  class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                    <label  class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
-                    </div>
+                  {moduleList?.map((modulename, role) => (
+                  <div key={role} className="flex items-center gap-2">
+                  <Radio color="success" onChange={(e) => setModuleName(e.target.value)} id="permission" name="countries"
+                  value={modulename?.Module_id}  />
+                  <Label htmlFor="permission">{modulename?.Module_name}</Label>
+                  </div>
                   ))}
                  </div>
                </div>
@@ -393,31 +356,35 @@ useEffect(() => {
                   <div className='lg:w-full w-full'>
                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT USER</h1>
 
-                   {stateRolePrevList?.map((rolename, i) => (
+                   {stateRolePrevList?.map((rolename, Role) => (
                      <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-2 gap-2">
 
-                     <div key={i}  class="flex items-center ps-2  rounded dark:border-gray-700">
+                     <div key={Role}  class="flex items-center ps-2  rounded dark:border-gray-700">
                     {/* <input  onChange={(e) => setUser(e.target.value)} id="y" type="checkbox" value={prev?.personal_id} name="y" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/> */}
                     <label  class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{rolename?.role_name}</label>
                     </div>
                      
                      <div>
+                  
+
+
 
                     
-                    <div key={i} className="flex items-center ps-2 rounded dark:border-gray-700">
+                    <div key={Role} className="flex items-center ps-2 rounded dark:border-gray-700">
+
                     <input
                      onChange={handleChange}
-                    id={`bordered-checkbox-${i}-r-read`}
+                    id={`bordered-checkbox-${Role}-r-read`}
                     type="checkbox"
                     value={`${rolename?.role_id}_1`}
-                    name="bordered-checkbox"
+                    name={`bordered-checkbox-${Role}`}
                     checked={rolename?.p_read===1}
                     // defaultChecked={prev?.p_read===1?true:false}
                     className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                    />
 
                     <label
-                      htmlFor={`bordered-checkbox-${i}-r-read`}
+                      htmlFor={`bordered-checkbox-${Role}-r-read`}
                       className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
                     >
                       {rolename?.p_read ? "READ" : "READ"}
@@ -425,16 +392,16 @@ useEffect(() => {
 
                     <input
                        onChange={handleChange}               
-                      id={`bordered-checkbox-${i}-r-create`}
+                      id={`bordered-checkbox-${Role}-c-create`}
                       type="checkbox"
                       value={`${rolename?.role_id}_2`}
-                      name="bordered-checkbox"
+                      name={`bordered-checkbox-${Role}`}
                       checked={rolename?.p_create===2}
                       // defaultChecked={prev?.p_create===2?true:false}
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
-                      htmlFor={`bordered-checkbox-${i}-r-create`}
+                      htmlFor={`bordered-checkbox-${Role}-c-create`}
                       className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
                     >
                       {rolename?.p_create ? "CREATE" : "CREATE"}
@@ -442,16 +409,16 @@ useEffect(() => {
 
                     <input
                         onChange={handleChange} 
-                      id={`bordered-checkbox-${i}-r-edit`}
+                      id={`bordered-checkbox-${Role}-e-edit`}
                       type="checkbox"
                       value={`${rolename?.role_id}_3`}
-                      name="bordered-checkbox"
+                      name={`bordered-checkbox-${Role}`}
                       checked={rolename?.p_edit===3}
                       // defaultChecked={prev?.p_edit===3?true:false}
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
-                      htmlFor={`bordered-checkbox-${i}-r-edit`}
+                      htmlFor={`bordered-checkbox-${Role}-e-edit`}
                       className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
                     >
                       {rolename?.p_edit ? "EDIT" : "EDIT"}
@@ -459,17 +426,17 @@ useEffect(() => {
 
                     <input
                       onChange={handleChange}  
-                      id={`bordered-checkbox-${i}-r-delete`}
+                      id={`bordered-checkbox-${Role}-d-delete`}
                       type="checkbox"
                       value={`${rolename?.role_id}_4`}
-                      name="bordered-checkbox"
+                      name={`bordered-checkbox-${Role}`}
                       checked={rolename?.p_delete===4?true:false}
 
                       // defaultChecked={prev?.p_delete===4?true:false}
                       className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                     <label
-                      htmlFor={`bordered-checkbox-${i}-r-delete`}
+                      htmlFor={`bordered-checkbox-${Role}-d-delete`}
                       className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
                     >
                       {rolename?.p_delete ? "DELETE" : "DELETE"}
@@ -504,11 +471,11 @@ useEffect(() => {
               <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
               <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
               {moduleList?.map((modulename, i) => (
-              <div key={i} class="flex items-center ps-2  rounded dark:border-gray-700">
-                <input onChange={(e) => setModuleName(e.target.value)} type="checkbox" 
-                value={modulename?.Module_id}  class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                <label  class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{modulename?.Module_name}</label>
-                </div>
+               <div key={i} className="flex items-center gap-2">
+               <Radio color="success" onChange={(e) => setModuleName(e.target.value)} id="permission" name="countries"
+               value={modulename?.Module_id}  />
+               <Label htmlFor="permission">{modulename?.Module_name}</Label>
+               </div>
               ))}
              </div>
            </div>
@@ -528,10 +495,9 @@ useEffect(() => {
                  
                  <div>
 
-                
                 <div  className="flex items-center ps-2 rounded dark:border-gray-700">
                 <input
-                 onChange={handleChange}
+                onChange={handleChange}
                 id={`bordered-checkbox-${i}-p-read`}
                 type="checkbox"
                 value={`${projectName?.project_id}_1`}
