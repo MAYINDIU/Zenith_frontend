@@ -8,6 +8,8 @@ import { ThreeCircles } from 'react-loader-spinner';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import swal from 'sweetalert';
+import {useGetDeptPermissionListQuery, useCreatePermissionMutation, useGetRolePrevlistQuery }
+ from '../../features/api/dept_head_api';
 const Permission = () => {
  const [deptHeadList,setDeptHeadList]=useState([]);
  const [moduleList,setModuleList]=useState([]);
@@ -17,23 +19,138 @@ const Permission = () => {
  const [spinner, setSpinner] = useState(false); 
  const [selectdept,setselectdept]=useState('');
  const [permissionType,setPermissionType]=useState('');
-console.log(permissionType)
- const { id,name} = useParams();
+ const[moduleRoleList,setModueleRoleList]=useState(['']);
+
+const { id,name} = useParams();
 const navigate=useNavigate();
 
 
-// console.log(selectdept)
+
+
+
+
 
 const user_information=JSON.parse(localStorage.getItem('UserDetails'));
 const PERSONAL_ID=user_information?.PERSONALID;
 
 
-const showToastMessage = () => {
-  toast.success("Success Notification !", {
-    position: toast.POSITION.TOP_RIGHT,
-  });
+//2-project privilage data get data--------------------
+const { data: departmentPrevList } = useGetDeptPermissionListQuery(moduleName);
+const[departmentpList,setDepartmentPList]=useState(['']);
+useEffect(() => {
+  if (departmentPrevList) {
+    setDepartmentPList(departmentPrevList);
+  }
+}, [departmentPrevList]);
+
+
+
+
+// fetch for role module list
+const ModuleList = async () => {
+  setSpinner(true)
+ try {
+   const response = await axios.get(`http://localhost:5000/api/dept-head-pmodule-list/${PERSONAL_ID}`);
+   setModueleRoleList(response.data?.module_list);
+   setSpinner(false); 
+  } catch (error) {
+   console.error("Error fetching data:", error);
+ }
 };
+useEffect(() => {
+ ModuleList();
+}, []);
+// fetch for role module list
+
+//2-role privilage data get data--------------------
+const { data: rolePrevList } = useGetRolePrevlistQuery(moduleName);
+const [stateRolePrevList, setStateRolePrevList] = useState(['']);
+useEffect(() => {
+  if (rolePrevList) {
+    setStateRolePrevList(rolePrevList);
+  }
+}, [rolePrevList]);
+
+const [sUserId, setSUserId] = useState(null);
+const [sPrevId, setSPrevId] = useState(null);
+const [permittype, setPermitType] = useState(null);
+const [isSubscribed, setIsSubscribed] = useState(false);
+const handleChange = (event) => {
+  const selectData = event.target.value;
+  console.log(selectData);
+  let sData;
+  if (event.target.checked) {
+    sData = selectData + "_A";
+    
+  } else {
+    sData = selectData + "_D";
+   
+  }
+  const [userId, prevId, type] = sData.split('_');
+  setSUserId(userId);
+  setSPrevId(prevId);
+  setPermitType(type);
+};
+
+
+
+const [createPermission, { data: permission, error: permissionError, isSuccess }] = useCreatePermissionMutation();
+// Create a new user
+const handleCreateUser = (e) => {
+
+  const MODULE_ID = moduleName;
+  const ACCESS_BY = sUserId;
+  const PERMITTED_BY = PERSONAL_ID;
+  const PROCESS = permittype;
+  const TYPE = permissionType;
+  const PRIVILAGE_ID = sPrevId;
+
+  if (MODULE_ID === "" || ACCESS_BY === "") {
+    alert('Please select Module and Access User');
+    return;
+  }
+  const permissions = {
+    MODULE_ID,
+    ACCESS_BY,
+    PRIVILAGE_ID,
+    PERMITTED_BY,
+    PROCESS,
+    TYPE,
+  };
+
+  console.log(permissions)
+  createPermission(permissions)
+    .then((data) => {
+
+    })
+    .catch((error) => {
+      // Handle the error
+      console.error('Error creating permission:', error);
+
+    });
+};
+
+useEffect(() => {
+  // Check if sPrevId is not null before calling handleCreateUser
+
+if(sPrevId!==null){
+const done = async () => {
+await  handleCreateUser();
+setSUserId(null);
+setSPrevId(null);
+setPermitType(null);
+};
+done();
+ }
+}, [sPrevId]);
+
+
+
 // fetch all department head data
+
+
+
+
   const deptHeadData = async () => {
     setSpinner(true)
     try {
@@ -140,9 +257,20 @@ if (addPermission === 'Permission Successfully') {
     return (
         <div>
          <Navbar/>
-         <h1 className='shadow-lg w-64 mx-auto p-3 mt-5 font-bold rounded text-center'>MODULE PERMISSION</h1>
+         <h1 className='shadow w-1/3 mx-auto p-3 mt-5 font-bold rounded text-center'>MODULE PERMISSION FOR DEPARTMENT HEAD/ TOP MANAGEMENT</h1>
          <h1 className='mt-5 text-green-700'>{addPermission}</h1>
-         <div className="flex justify-center mb-2 ">
+    
+              <div class="p-3 grid grid-cols-1 shadow-md rounded   mt-0 lg:grid-cols-2 gap-0  w-full lg:w-[600px] justify-center lg:mx-auto lg:mt-2">
+              <div className="flex items-center gap-2">
+              <Radio  onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={'DEPT-HEAD'}  />
+              <Label htmlFor="permission">DEPARTMENT WISE PERMISSION</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Radio  onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={'ROLE'}  />
+                <Label htmlFor="permission">ROLE WISE PERMISSION</Label>
+              </div>
+             </div>
+             <div className="flex justify-center mb-2 ">
                 <ThreeCircles
                 height="60"
                 width="60"
@@ -156,36 +284,18 @@ if (addPermission === 'Permission Successfully') {
                 middleCircleColor=""
                 />
               </div>
-              <div class="p-2 grid grid-cols-1 shadow-md rounded   mt-0 lg:grid-cols-2 gap-0  w-full lg:w-[650px] justify-center lg:mx-auto lg:mt-2">
-              <div className="flex items-center gap-2">
-              <Radio onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={1}  />
-              <Label htmlFor="permission">USER WISE PERMISSION</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <Radio onChange={(e) => setPermissionType(e.target.value)} id="permission" name="countries" value={2}  />
-              <Label htmlFor="permission">ROLE WISE PERMISSION</Label>
-            </div>
-         
-                 
-             </div>
 
-             {permissionType==="1" &&
-              <div >
-              <div class=" w-full lg:w-[1200px] justify-center lg:mx-auto lg:mt-2">
-             <div class="block shadow-xl lg:w-full  bordered rounded p-3 lg:p-5 rounded-xl border-gray bordered-sm bg-white">
-             <form  className="flex  flex-col gap-4">
-                 <div class="p-2 grid grid-cols-1 mt-2 lg:grid-cols-2 gap-5">
-                 <div className='lg:w-full w-full'>
-                   {/* <select className="form-input mt-2 w-full shadow rounded"   onChange={(e) => setModuleName(e.target.value)} >
-                   <option>Select Module</option>
-                   {moduleList?.map((modulename, i) => (
-                      <option value={modulename?.Module_id}>{modulename?.Module_name}</option>
-                     ))}
-                   </select> */}
-                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
-                   <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
-                 
-                   {moduleList?.map((modulename, i) => (
+       {permissionType==='DEPT-HEAD' &&
+         <div >
+             <div class=" w-full lg:w-[1500px] justify-center lg:mx-auto lg:mt-2">
+            <div class="block shadow-xl lg:w-full  bordered rounded p-3 lg:p-5 rounded-xl border-gray bordered-sm bg-white">
+              <form  className="flex  flex-col gap-4">
+                <div class="p-2 grid grid-cols-1 mt-2 lg:grid-cols-2 gap-5">
+                {moduleList.length>0 &&
+                <div className='lg:w-full w-full'>
+                  <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
+                  <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
+                  {moduleList?.map((modulename, i) => (
                <div key={i} className="flex items-center gap-2">
                <Radio onChange={(e) => setModuleName(e.target.value)} id="permission" name="countries"
                value={modulename?.Module_id}  />
@@ -193,55 +303,202 @@ if (addPermission === 'Permission Successfully') {
                </div>
                
                    ))}
-                  </div>
-                </div>
-               
-                 <div className='lg:w-full w-full'>
-                   {/* <select className="form-input mt-2 w-full shadow rounded"   onChange={(e) => setDepartmentName(e.target.value)} >
-                   <option>Select Department</option>
-                   {deptHeadList?.map((headname, i) => (
-                      <option value={headname?.dept_head_id}>{headname?.department_name}</option>
-                     ))}
-                   </select> */}
-                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT DEPARTMENT</h1>
-                    <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
-                   {deptHeadList?.map((headname, i) => (
-                   <div class="flex items-center ps-2  rounded dark:border-gray-700">
-                     <input  onChange={(e) => setDepartmentName(e.target.value)} id="bordered-checkbox-1" type="checkbox" value={headname?.dept_head_id} name="bordered-checkbox" class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
-                     <label for="bordered-checkbox-1" class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{headname?.department_name}</label>
-                     </div>
-               
-                   ))}
-                  </div>
-                </div>
- 
- 
                  </div>
-                 <div className='w-80 rounded-md flex  justify-center mx-auto'>
-                 <Button onClick={permissionAdd}  type='submit' color="success">Add Permission</Button>
-                 <div  className='ml-2 w-80' ><Button  type='submit' color="failure">Delete Permission</Button></div> 
-                 </div>
+               </div>
+                } 
+
+                 {departmentpList.length>1 &&
+                  <div className='lg:w-full w-full'>
+                  <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT USER</h1>
+
+                   {departmentpList?.map((prev, u) => (
+                     <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-2 gap-2">
+
+                     <div key={u}  class="flex items-center ps-2  rounded dark:border-gray-700">
+                    {/* <input  onChange={(e) => setUser(e.target.value)} id="y" type="checkbox" value={prev?.personal_id} name="y" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/> */}
+                    <label  class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{prev?.DEP_NAME}</label>
+                    </div>
+                     
+                     <div>
+                    <div key={u} className="flex items-center ps-2 rounded dark:border-gray-700">
+                    <input
+                    onClick={handleChange}
+                    id={`bordered-checkbox-${u}-u-read`}
+                    type="checkbox"
+                    value={`${prev?.ACCESS_BY}_0`}
+                    name="bordered-checkbox"
+                    checked={prev?.PERMIT_STATUS===1}
+                    // defaultChecked={prev?.p_read === 1 ?? false}
+                    className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                   />
+
+                    <label
+                      htmlFor={`bordered-checkbox-${u}-u-read`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {prev?.PERMIT_STATUS ? "PERMITTED" : "PERMITTED"}
+                    </label>
+
+
+                    </div> 
+                    </div>
+
+                  </div>
              
-                 </form>
-             </div>
-             </div>
+                  ))}
+                  </div>
+       
+                 }
+                
+                </div>
+
+              </form>
+
+            </div>
+            </div>
          </div>
+          }
+
+             {permissionType==="ROLE" &&
+             <div >
+             <div class=" w-full lg:w-[1300px] justify-center lg:mx-auto lg:mt-2">
+            <div class="block shadow-xl lg:w-full  bordered rounded p-3 lg:p-5 rounded-xl border-gray bordered-sm bg-white">
+              <form  className="flex  flex-col gap-4">
+                <div class="p-2 grid grid-cols-1 mt-2 lg:grid-cols-2 gap-5">
+                {moduleRoleList.length>0 &&
+                <div className='lg:w-full w-full'>
+                  <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT MODULE</h1>
+                  <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-1 gap-3">
+                  {moduleList?.map((modulename, role) => (
+                  <div key={role} className="flex items-center gap-2">
+                  <Radio color="success" onChange={(e) => setModuleName(e.target.value)} id="permission" name="countries"
+                  value={modulename?.Module_id}  />
+                  <Label htmlFor="permission">{modulename?.Module_name}</Label>
+                  </div>
+                  ))}
+                 </div>
+               </div>
+                } 
+
+                 {stateRolePrevList.length>1 &&
+                  <div className='lg:w-full w-full'>
+                  <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT USER</h1>
+
+                   {stateRolePrevList?.map((rolename, Role) => (
+                     <div class="p-2 grid grid-cols-1  mt-0 lg:grid-cols-2 gap-2">
+
+                     <div key={Role}  class="flex items-center ps-2  rounded dark:border-gray-700">
+                    {/* <input  onChange={(e) => setUser(e.target.value)} id="y" type="checkbox" value={prev?.personal_id} name="y" class="w-4 h-4 text-dark bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/> */}
+                    <label  class="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300">{rolename?.role_name}</label>
+                    </div>
+                     
+                     <div>
+                  
+                    <div key={Role} className="flex items-center ps-2 rounded dark:border-gray-700">
+
+                    <input
+                    onChange={handleChange}
+                    id={`bordered-checkbox-${Role}-r-read`}
+                    type="checkbox"
+                    value={`${rolename?.role_id}_1`}
+                    name={`bordered-checkbox-${Role}`}
+                    checked={rolename?.p_read===1}
+                    // defaultChecked={prev?.p_read===1?true:false}
+                    className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                   />
+
+                    <label
+                      htmlFor={`bordered-checkbox-${Role}-r-read`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {rolename?.p_read ? "READ" : "READ"}
+                    </label>
+
+                    <input
+                       onChange={handleChange}               
+                      id={`bordered-checkbox-${Role}-c-create`}
+                      type="checkbox"
+                      value={`${rolename?.role_id}_2`}
+                      name={`bordered-checkbox-${Role}`}
+                      checked={rolename?.p_create===2}
+                      // defaultChecked={prev?.p_create===2?true:false}
+                      className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`bordered-checkbox-${Role}-c-create`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {rolename?.p_create ? "CREATE" : "CREATE"}
+                    </label>
+
+                    <input
+                        onChange={handleChange} 
+                      id={`bordered-checkbox-${Role}-e-edit`}
+                      type="checkbox"
+                      value={`${rolename?.role_id}_3`}
+                      name={`bordered-checkbox-${Role}`}
+                      checked={rolename?.p_edit===3}
+                      // defaultChecked={prev?.p_edit===3?true:false}
+                      className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`bordered-checkbox-${Role}-e-edit`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {rolename?.p_edit ? "EDIT" : "EDIT"}
+                    </label>
+
+                    <input
+                      onChange={handleChange}  
+                      id={`bordered-checkbox-${Role}-d-delete`}
+                      type="checkbox"
+                      value={`${rolename?.role_id}_4`}
+                      name={`bordered-checkbox-${Role}`}
+                      checked={rolename?.p_delete===4?true:false}
+
+                      // defaultChecked={prev?.p_delete===4?true:false}
+                      className="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    />
+                    <label
+                      htmlFor={`bordered-checkbox-${Role}-d-delete`}
+                      className="w-full py-1 ml-2 text-left ms-2 text-sm font-sm text-dark dark:text-gray-300"
+                    >
+                      {rolename?.p_delete ? "DELETE" : "DELETE"}
+                    </label>
+
+                    </div> 
+                    </div>
+
+                  </div>
+             
+                  ))}
+                  </div>
+                 }
+                
+                </div>
+
+              </form>
+
+            </div>
+            </div>
+             </div>
+             
              }
   
         
-        <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        type="warning"
-      />
+              <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              type="warning"
+            />
        </div>
 
     );

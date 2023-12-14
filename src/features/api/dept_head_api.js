@@ -9,7 +9,12 @@ const dept_head_api = apiSlice.injectEndpoints({
       providesTags: ["dept_head"],
     }),
     
-
+    getDeptPermissionList: builder.query({
+      query: (module_id) => ({
+        url: `/getDeptPermissionList/${module_id}`,
+      }),
+      providesTags: ["dept_head"],
+    }),
     getProjectPrevlist: builder.query({
       query: (module_id) => ({
         url: `/project-privilage-list/${module_id}`,
@@ -58,6 +63,7 @@ const dept_head_api = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetDeptPermissionListQuery,
   useGetUserprivilagelistQuery,
   useGetRolePrevlistQuery,
   useGetProjectPrevlistQuery,

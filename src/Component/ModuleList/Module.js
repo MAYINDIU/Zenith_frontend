@@ -12,6 +12,7 @@ const Module = () => {
 
 // fetch sub module list
 const ModuleList = async () => {
+  setSpinner(true)
   try {
     const response = await axios.get('http://localhost:5000/api/all-modules');
     setModueleList(response.data?.module_list);
@@ -32,7 +33,7 @@ useEffect(() => {
         <div>
         <Navbar/>
         <div className='p-2 lg:p-5 lg:px-48'>
-        <h1 className='shadow w-48 mx-auto p-3 font-bold rounded text-center'>ALL MODULE LIST</h1>
+        <h1 className='shadow w-60 mx-auto p-3 font-bold rounded text-center'>ALL MODULE LIST</h1>
         <div className="flex justify-center mb-2 ">
                 <ThreeCircles
                 height="60"
@@ -57,7 +58,6 @@ useEffect(() => {
             </div>
             </Link>
               ))}
-    
          </div>
  
         </div>

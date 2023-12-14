@@ -56,7 +56,7 @@ const login = event => {
             //  toast.error(`Opps!Please type proper emp code & password`);
         }
         else if(ROLE_ID===1) {
-            navigate(`/desk-user`);
+            navigate(`/development`);
 
         }
         else if(ROLE_ID===2) {
