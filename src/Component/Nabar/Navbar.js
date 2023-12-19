@@ -20,7 +20,7 @@ const Navbar = () => {
 
             {/* <!-- Section: Design Block --> */}
             <section class="mb-0">
-                <nav class="navbar navbar-expand-lg bg-[#1faa00] lg:px-28 shadow-md py-1 relative flex items-center w-full justify-between">
+                <nav class="navbar navbar-expand-lg bg-[#1faa00] lg:px-12 shadow-md py-1 relative flex items-center w-full justify-between">
                     <div class="px-6 w-full flex flex-wrap items-center justify-between">
                         <div class="flex items-center">
                             <button
@@ -53,28 +53,31 @@ const Navbar = () => {
                         </div>
                         <div class="navbar-collapse collapse grow items-center" id="navbarSupportedContentY">
                         {role_id===0 &&
-                           <ul class="navbar-nav mr-auto lg:flex lg:flex-row lg:px-40">
+                           <ul class="navbar-nav mr-auto lg:flex lg:flex-row lg:px-20">
                                
-                                  <li class=" nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                  <li class=" nav-item flex text-center bg-[#087f23] pl-2  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                   <AiOutlineHome className='mt-1 text-white mr-1' /> <NavLink className='text-white pr-3 font-weight-bold' to='/dashboard' activeStyle={{color: "#005005",textDecoration:"none"}}>Home</NavLink>
                                  </li>
                            
-                                 <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                 <li class="nav-item flex text-center bg-[#087f23] pl-2  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                   <NavLink className='text-white pr-3 font-weight-bold' to='/department-head' activeStyle={{color: "#005005",textDecoration:"none"}}>Module List</NavLink>
                                  </li>
-                                 <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                 <li class="nav-item flex text-center bg-[#087f23] pl-2  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                   <NavLink className='text-white pr-3 font-weight-bold' to='/module-list' activeStyle={{color: "#005005",textDecoration:"none"}}>Access Permission</NavLink>
                                  </li>
-                                 <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                 <li class="nav-item flex text-center bg-[#087f23] pl-2  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                   <NavLink className='text-white pr-3 font-weight-bold' to='/permission-user-list' activeStyle={{color: "#005005",textDecoration:"none"}}>Privilage List</NavLink>
                                  </li>
-                                  <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                  <li class="nav-item flex text-center bg-[#087f23] pl-2  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                   <NavLink className='text-white pr-3 font-weight-bold' to='/module' activeStyle={{color: "#005005",textDecoration:"none"}}>Module Assign</NavLink>
                                  </li>
                              
                              
-                                  <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                  <li class="nav-item flex text-center bg-[#087f23] pl-2  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                   <NavLink className='text-white pr-3 font-weight-bold' to='/user-list' activeStyle={{color: "#005005",textDecoration:"none"}}>Department User List</NavLink>
+                                 </li>
+                                 <li class="nav-item flex text-center bg-[#087f23] pl-3  pr-0 mt-1 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                  <NavLink className='text-white pr-3 font-weight-bold' to='/proposal-entry' activeStyle={{color: "#005005",textDecoration:"none"}}>Proposal Entry</NavLink>
                                  </li>
                              
                                 {/* <li class="nav-item flex  text-center bg-[#087f23] pl-3 pr-0 p-1.5 mt-1 mr-3 rounded hover:bg-[#005005]">
@@ -83,7 +86,7 @@ const Navbar = () => {
                                 <li class="nav-item mb-2 lg:mb-0 flex text-center bg-[#087f23] pl-3 mt-1 pr-0 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                 <NavLink className='text-white pr-3' to='/contact'>Contact us</NavLink>
                                 </li> */}
-                                <li class="nav-item mb-2 lg:mb-0 flex text-center bg-[#087f23] pl-3 mt-1 pr-0 p-1.5 mr-3 rounded hover:bg-[#005005]">
+                                <li class="nav-item mb-2 lg:mb-0 flex text-center bg-[#087f23] pl-2 mt-1 pr-0 p-1.5 mr-0 rounded hover:bg-[#005005]">
                                 <NavLink className='text-white pr-3' onClick={handleLogout} to='/'>Logout</NavLink>
 
                                     {/* <a class="nav-link block pr-2 lg:px-2 py-2 text-white hover:text-white focus:text-white transition duration-150 ease-in-out" href="#!" data-mdb-ripple="true" data-mdb-ripple-color="light">Contact Us</a> */}
@@ -96,7 +99,7 @@ const Navbar = () => {
                         
                               
                                 <li class="nav-item flex  text-center bg-[#087f23] pl-3 pr-0 p-1.5 mt-1 mr-3 rounded hover:bg-[#005005]">
-                                      <NavLink className='text-white pr-3' to='/desk-user'>Home</NavLink>
+                                      <NavLink className='text-white pr-3' to='/development'>Home</NavLink>
                                     {/* <a class="nav-link block pr-2 lg:px-2 py-2 text-white hover:text-white focus:text-white transition duration-150 ease-in-out" href="/about" data-mdb-ripple="true" data-mdb-ripple-color="light">About Us</a> */}
                                 </li>
                                 <li class="nav-item mb-2 lg:mb-0 flex text-center bg-[#087f23] pl-3 mt-1 pr-0 p-1.5 mr-3 rounded hover:bg-[#005005]">
@@ -142,7 +145,7 @@ const Navbar = () => {
                             {role_id===3 &&
                            <ul class="navbar-nav mr-auto lg:flex lg:flex-row lg:px-40">
                                 <li class="nav-item flex  text-center bg-[#087f23] pl-3 pr-0 p-1.5 mt-1 mr-3 rounded hover:bg-[#005005]">
-                                      <NavLink className='text-white pr-3' to='/director'>Home</NavLink>
+                                <NavLink className='text-white pr-3' to='/development'>Home</NavLink>
                                 </li>
                                 <li class="nav-item mb-2 lg:mb-0 flex text-center bg-[#087f23] pl-3 mt-1 pr-0 p-1.5 mr-3 rounded hover:bg-[#005005]">
                                 <NavLink className='text-white pr-3' to='/contact'>Contact us</NavLink>

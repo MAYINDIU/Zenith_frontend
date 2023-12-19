@@ -5,11 +5,15 @@ import user from '../../../assets/icon/user.png';
 import { Link } from 'react-router-dom';
 import { Button, Label, Radio, Toast } from 'flowbite-react';
 import { green } from '@mui/material/colors';
+import { ThreeCircles } from 'react-loader-spinner';
 const Home = () => {
     const[Dept_head,setDept_head]=useState('');
     const[projectList,setProjetList]=useState(['']);
     const[ModulepermitList,setModuleList]=useState(['']);
     const [projectid,setProject]=useState('');
+    const [spinner, setSpinner] = useState(false); 
+
+   console.log(ModulepermitList) 
 
 
     const handleChange = (e) => {
@@ -21,15 +25,12 @@ const Home = () => {
       const PERSONAL_ID=UserD?.PERSONALID;
       const prjct=UserD?.PROJECT;
       const NAME=UserD?.NAME;
-
- 
-
+      const role_name=UserD?.ROLE_NAME;
 
       useEffect(() => {
         if(projectList?.length <=1){
-          const extractedProjectIds =projectList?.map(project => project.PROJECT_ID);
-       
-          setProject(extractedProjectIds);
+        const extractedProjectIds =projectList?.map(project => project.PROJECT_ID);
+         setProject(extractedProjectIds);
           
         }
       }, [projectList]);
@@ -50,9 +51,11 @@ const Home = () => {
 
      // Project List
      const projectpermissionList = async () => {
+      setSpinner(true);
       try {
         const response = await axios.get(`http://localhost:5000/api/project-list/${PERSONAL_ID}`);
         setProjetList(response.data?.project_list);
+        setSpinner(false);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -64,9 +67,11 @@ const Home = () => {
 
          // Module List
          const moduleList = async () => {
+          setSpinner(true)
           try {
             const response = await axios.get(`http://localhost:5000/api/permission-module-list/${PERSONAL_ID}/${projectid}`);
             setModuleList(response?.data);
+            setSpinner(false)
           } catch (error) {
             console.error("Error fetching data:", error);
           }
@@ -76,19 +81,39 @@ const Home = () => {
         }, [PERSONAL_ID,projectid]);
          // Module List
 
+        
+
 
     return (
         <div>
         <Navbar/>
-        <h1 className='mt-5'>Welcome To Development Panel</h1>
+        <h1 className='mt-5'>Welcome To dashboard</h1>
+    
         <div className='shadow p-3 w-full lg:w-1/4 mt-5 mx-auto lg:p-3  rounded-lg text-center'>
          <div className='flex justify-center'>
-            <img className='lg:w-20   w-16   shadow-lg bg-white rounded-full p-1 
-             lg:block' src={user} />
+            <img className='lg:w-20   w-16   shadow-lg bg-white rounded-full p-1 lg:block'
+             src={user} />
             </div>
             <h1 className='mt-4'> <span className='font-bold'>{NAME}</span>  <br/> <span className='text-sm'>({PERSONAL_ID})</span> 
-           <br/> <span className='text-sm font-bold-none'>{dept_name} </span> </h1>
+            <br/> <span className='text-sm font-bold'>{role_name} </span>
+           <span className='text-sm font-bold-none'>{dept_name} </span> 
+          
+           </h1>
          </div>
+         <div className="flex justify-center mb-2 mt-2 ">
+                <ThreeCircles
+                height="60"
+                width="60"
+                color="#4fa94d"
+                wrapperStyle={{}}
+                wrapperClass=""
+                visible={spinner}
+                ariaLabel="three-circles-rotating"
+                outerCircleColor=""
+                innerCircleColor=""
+                middleCircleColor=""
+                />
+              </div>
 
          <div className='flex justify-content-center'>
          {projectList?.length>1 &&
@@ -114,7 +139,7 @@ const Home = () => {
             ModulepermitList?.map((mName, i) => (
               <Link key={i} to="#">
                 <div className="mt-3 ml-2">
-                  <Button color="success">{mName?.MODULE_NAME}</Button>
+                  <Button  color="success">{mName?.MODULE_NAME}</Button>
                 </div>
               </Link>
             ))}

@@ -30,6 +30,13 @@ const navigate=useNavigate();
 
 const DEPT_CODE=UserD?.DEPT_CODE;
 
+
+fetch('http://localhost:5000/api/permission-list-desk/2/DP001')
+.then((res) => res.json())
+.then(data=>console.log(data))
+
+
+
 // fetch permitted dept-head module list
 const ModuleList = async () => {
      setSpinner(true)
@@ -94,7 +101,7 @@ const handleCreateUser = (e) => {
     TYPE,
   };
 
-  console.log(permissions)
+  // console.log(permissions)
   createPermission(permissions)
     .then((data) => {
 
@@ -129,24 +136,27 @@ done();
 if (addPermission === "Permission Successfully") {
 // navigate('/permission-user-list');
 }
-// user permission list get data-----------------------
+
+// console.log(module_id,DEPT_CODE)
+// 1-user permission list get data-----------------
 const [privilageList, setPrivilageList] = useState([]);
+
 const { data, isLoading, isError } = useGetUserprivilagelistQuery({ module_id, DEPT_CODE }
   ,{
     refetchOnMountOrArgChange: true,
   });
-
 useEffect(() => {
   if (data) {
     setPrivilageList(data);
   }
 }, [data]);
-// 1-user permission list get data-----------------
+
 
 
 
 //2-project privilage data get data--------------------
 const { data: projectPrevList } = useGetProjectPrevlistQuery(module_id);
+
 const [stateProjectPrevList, setStateProjectPrevList] = useState(['']);
 useEffect(() => {
   if (projectPrevList) {
@@ -209,7 +219,7 @@ useEffect(() => {
                </div>
                 } 
 
-                 {privilageList.length>1 &&
+                 {privilageList?.length>1 &&
                   <div className='lg:w-full w-full'>
                   <h1 className='shadow-xl p-2 text-white bg-[#2E7D32] rounded'>SELECT USER</h1>
 
@@ -437,7 +447,7 @@ useEffect(() => {
         </div>
          </div>
           }
-                    <ToastContainer
+        <ToastContainer
         position="top-right"
         autoClose={5000}
         hideProgressBar={false}

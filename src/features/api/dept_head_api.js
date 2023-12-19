@@ -29,14 +29,14 @@ const dept_head_api = apiSlice.injectEndpoints({
       providesTags: ["dept_head"],
     }),
 
-    
-
     getUserprivilagelist: builder.query({
       query: ({ module_id, DEPT_CODE }) => ({
-        url: `/privilage-list/${module_id}/${DEPT_CODE}`,
+        url: `/permission-list-desk/${module_id}/${DEPT_CODE}`,
       }),
       providesTags: ["dept_head"],
     }),
+    
+
     getDepartmentHead: builder.query({
       query: () => ({
         url: "/department-head-list",

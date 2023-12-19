@@ -64,7 +64,7 @@ const login = event => {
 
         }
         else if(ROLE_ID===3) {
-            navigate(`/director`);
+            navigate(`/development`);
  
         }
         else if(ROLE_ID===4) {

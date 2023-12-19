@@ -22,6 +22,7 @@ import Module from './Component/ModuleList/Module';
 import Permission from './Component/Permission/Permission';
 import Requireauth from './Component/PrivateRoute/Requireauth';
 import SinglePermission from './Component/Pages/DepartmentHead/SinglePermission';
+import Index from './Component/Modules/ProposalEntry/Index';
 
 
 function App() {
@@ -56,6 +57,10 @@ function App() {
             {/*Developement*/}
             <Route path='/desk-user' element={<Requireauth><Desk/></Requireauth>}>Desk user</Route>
            {/*Developement*/}
+
+           {/*Proposal Module*/}
+               <Route path='/proposal-entry' element={<Requireauth><Index/></Requireauth>}>Proposal Entry Form</Route>
+           {/*Proposal Module*/}
 
 
 
