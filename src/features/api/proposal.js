@@ -17,8 +17,8 @@ const proposal = apiSlice.injectEndpoints({
     }),
 
     getChainlist: builder.query({
-      query: (PROJECT_ID) => ({
-        url: `/chain-list/${PROJECT_ID}`,
+      query: ({ BASE_PROJECT, BASE_CODE }) => ({
+        url: `/chain-list/${BASE_PROJECT}/${BASE_CODE}`,
       }),
       providesTags: ["proposal_head"],
     }),
