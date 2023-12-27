@@ -2,9 +2,33 @@ import { apiSlice } from "./apiSlice";
 
 const proposal = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getOccupationlist: builder.query({
+      query: () => ({
+        url: "/occupation",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+    getCountrylist: builder.query({
+      query: () => ({
+        url: "/country",
+      }),
+      providesTags: ["proposal_head"],
+    }),
     getBranchlist: builder.query({
       query: () => ({
         url: "/all-branch",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+    getGender: builder.query({
+      query: () => ({
+        url: "/all-gender",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+    getLocallity: builder.query({
+      query: () => ({
+        url: "/all-locallity",
       }),
       providesTags: ["proposal_head"],
     }),
@@ -34,13 +58,24 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
+    getPostofficelist: builder.query({
+      query: (CODE) => ({
+        url: `/post-office/${CODE}`,
+      }),
+      providesTags: ["proposal_head"],
+    }),
   }),
 });
 
 export const {
+  useGetOccupationlistQuery,
+  useGetCountrylistQuery,
+  useGetLocallityQuery,
+  useGetGenderQuery,
   useGetThanalistQuery,
   useGetBranchlistQuery,
   useGetProjectlistQuery,
   useGetAgentlistQuery,
   useGetDistrictlisttQuery,
+  useGetPostofficelistQuery,
 } = proposal;

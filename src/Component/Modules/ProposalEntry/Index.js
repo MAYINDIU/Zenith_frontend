@@ -4,7 +4,12 @@ import { Button, Dropdown, Label, Radio, TextInput } from "flowbite-react";
 import {
   useGetAgentlistQuery,
   useGetBranchlistQuery,
+  useGetCountrylistQuery,
   useGetDistrictlisttQuery,
+  useGetGenderQuery,
+  useGetLocallityQuery,
+  useGetOccupationlistQuery,
+  useGetPostofficelistQuery,
   useGetProjectlistQuery,
   useGetThanalistQuery,
 } from "../../../features/api/proposal";
@@ -19,8 +24,18 @@ const Index = () => {
   const [chainlist, setChainList] = useState([]);
   const [proposalInfo, setProposalInfo] = useState([]);
   const [proposal_date, setProposalDate] = useState();
+  const [birth_date, setBirthDate] = useState();
+  const [resident, setResident] = useState();
+
   const [district, setDistrict] = useState();
   const [thana, setThana] = useState();
+  const [postOffice, setPostoffice] = useState();
+
+  const [pdistrict, setPDistrict] = useState();
+  const [pthana, setPThana] = useState();
+  const [ppostOffice, setPPostoffice] = useState();
+  const [policytype, setPolicyType] = useState(3);
+
   const [risk_date, setRiskdate] = useState();
 
   const formatAsMMDDYYYY = (dateString) => {
@@ -40,6 +55,11 @@ const Index = () => {
   const handleproposalDateChange = (e) => {
     setProposalDate(e.target.value);
   };
+
+  const handleBirthDateChange = (e) => {
+    setBirthDate(e.target.value);
+  };
+
   const handleriskDateChange = (e) => {
     setRiskdate(e.target.value);
   };
@@ -127,8 +147,22 @@ const Index = () => {
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
   const { data: agentList } = useGetAgentlistQuery(projectId);
   const { data: districtList } = useGetDistrictlisttQuery();
-  const { data: thanaList } = useGetThanalistQuery(district);
-  console.log(thanaList);
+  const { data: birthPlaceList } = useGetDistrictlisttQuery();
+  const { data: genderList } = useGetGenderQuery();
+  const { data: locallityList } = useGetLocallityQuery();
+  const { data: countryList } = useGetCountrylistQuery();
+  const { data: occupationList } = useGetOccupationlistQuery();
+
+  // console.log(genderList);
+
+  const { data: thanaList } = useGetThanalistQuery(
+    district ? district : pdistrict
+  );
+  const { data: postOfficeList } = useGetPostofficelistQuery(
+    thana ? thana : pthana
+  );
+
+  // console.log(agentList);
 
   const [selectedTopbarItem, setSelectedTopbarItem] = useState("PI");
 
@@ -185,28 +219,55 @@ const Index = () => {
         <div className="shadow-lg border lg:mx-48 mt-1 m-2 ">
           <div class="p-4 flex grid grid-cols-1       mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-2">
             <div className="justify-center  flex gap-2">
-              <div className="flex items-center gap-2">
-                <Radio
-                  select
-                  id="permission"
-                  name="countries"
-                  value={"inforce"}
+              <div class="flex items-center">
+                <input
+                  onChange={(e) => setPolicyType(e.target.value)}
+                  checked
+                  id="default-radio-2"
+                  type="radio"
+                  value={policytype}
+                  name="default-radio"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
-                <Label className="text-xs lg:text-sm" htmlFor="permission">
+                <label
+                  for="default-radio-2"
+                  class="ms-2  ml-1 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
                   CURRENT POLICY
-                </Label>
+                </label>
               </div>
-              <div className="flex items-center gap-2">
-                <Radio id="permission" name="countries" value={"PROJECT"} />
-                <Label className="text-xs lg:text-sm" htmlFor="permission">
+
+              <div class="flex items-center">
+                <input
+                  onChange={(e) => setPolicyType(e.target.value)}
+                  id="default-radio-2"
+                  type="radio"
+                  value={policytype}
+                  name="default-radio"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  for="default-radio-2"
+                  class="ms-2 ml-1 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
                   TP POLICY
-                </Label>
+                </label>
               </div>
-              <div className="flex items-center gap-2">
-                <Radio id="permission" name="countries" value={"backDate"} />
-                <Label className="text-xs lg:text-sm" htmlFor="permission">
+              <div class="flex items-center">
+                <input
+                  onChange={(e) => setPolicyType(e.target.value)}
+                  id="default-radio-2"
+                  type="radio"
+                  value={policytype}
+                  name="default-radio"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <label
+                  for="default-radio-2"
+                  class="ms-2 ml-1 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
                   BACK DATE POLICY
-                </Label>
+                </label>
               </div>
             </div>
 
@@ -343,9 +404,11 @@ const Index = () => {
                       {gender === "2" && <option value="2">FEMALE</option>}
                       {gender !== "1" && gender !== "2" && (
                         <>
-                          <option value="1">MALE</option>
-                          <option value="2">FEMALE</option>
-                          <option value="3">OTHERS</option>
+                          {genderList?.map((gender, i) => (
+                            <option key={i} value={gender?.gender_id}>
+                              {gender?.gender_name}
+                            </option>
+                          ))}
                         </>
                       )}
                     </select>
@@ -548,16 +611,22 @@ const Index = () => {
                         </select>
                       </div>
 
-                      <div className="bg-white align-items-center m-1  lg:mt-0">
-                        <label className="align-items-center  text-xs">
-                          P. OFFICE
+                      <div className="text-start px-2">
+                        <label className="text-start text-xs">
+                          POST OFFICE
                         </label>
-                        <input
-                          type="text"
-                          id="success"
-                          value={proposalInfo[0]?.city}
-                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                        />
+                        <select
+                          onChange={(e) => setPostoffice(e.target.value)}
+                          value={postOffice}
+                          className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full"
+                        >
+                          {postOfficeList?.map((office, i) => (
+                            <option key={i} value={office?.postoffice_code}>
+                              {office?.postoffice_name} -{" "}
+                              {office?.postoffice_code}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -585,40 +654,55 @@ const Index = () => {
                     </div>
 
                     <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
-                      <div className="bg-white  align-items-center m-1  lg:mt-0">
-                        <label className="align-items-center  text-xs">
-                          DISTRICT
+                      <div className="text-start px-2">
+                        <label className="text-start text-xs">
+                          SELECT DISTRICT
                         </label>
-                        <input
-                          type="text"
-                          id="success"
-                          value={proposalInfo[0]?.address2}
-                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                        />
+                        <select
+                          onChange={(e) => setPDistrict(e.target.value)}
+                          value={pdistrict}
+                          className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full"
+                        >
+                          {districtList?.map((districtt, ii) => (
+                            <option key={ii} value={districtt?.div_code}>
+                              {districtt?.division_name} - {districtt?.div_code}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="text-start px-2">
+                        <label className="text-start text-xs">
+                          SELECT THANA
+                        </label>
+                        <select
+                          onChange={(e) => setPThana(e.target.value)}
+                          value={pthana}
+                          className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full"
+                        >
+                          {thanaList?.map((thanaa, ii) => (
+                            <option key={ii} value={thanaa?.thana_code}>
+                              {thanaa?.thana_name} - {thanaa?.thana_code}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
-                      <div className="bg-white align-items-center m-1  lg:mt-0">
-                        <label className="align-items-center  text-xs">
-                          THANA
+                      <div className="text-start px-2">
+                        <label className="text-start text-xs">
+                          POST OFFICE
                         </label>
-                        <input
-                          type="text"
-                          id="success"
-                          value={proposalInfo[0]?.city}
-                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                        />
-                      </div>
-
-                      <div className="bg-white align-items-center m-1  lg:mt-0">
-                        <label className="align-items-center  text-xs">
-                          P. OFFICE
-                        </label>
-                        <input
-                          type="text"
-                          id="success"
-                          value={proposalInfo[0]?.city}
-                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                        />
+                        <select
+                          onChange={(e) => setPPostoffice(e.target.value)}
+                          value={ppostOffice}
+                          className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full"
+                        >
+                          {postOfficeList?.map((officee, ii) => (
+                            <option key={ii} value={officee?.postoffice_code}>
+                              {officee?.postoffice_name} -{" "}
+                              {officee?.postoffice_code}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -668,6 +752,183 @@ const Index = () => {
                   <div className="text-start px-0">
                     <div className="shadow-lg border m-2 rounded p-2">
                       <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                        <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                          <label className="w-28 mt-4 font-bold text-xs">
+                            MOB. NO.{" "}
+                          </label>
+                          <input
+                            type="text"
+                            id="success"
+                            value={proposalInfo[0]?.mobile}
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          />
+                        </div>
+                        <div className="bg-white flex  align-items-center m-1  lg:mt-0">
+                          <label className="w-20  mt-4 font-bold text-xs">
+                            TEL NO.{" "}
+                          </label>
+                          <input
+                            type="text"
+                            id="success"
+                            value={proposalInfo[0]?.nid_number}
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          />
+                        </div>
+                      </div>
+                      <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                        <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                          <label className="w-24 mt-4 font-bold text-xs">
+                            EMAIL{" "}
+                          </label>
+                          <input
+                            type="text"
+                            id="success"
+                            value={proposalInfo[0]?.nid_number}
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="shadow-xl m-2 ">
+            <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center lg:mx-auto lg:mt-0">
+              <div className="text-start px-0">
+                <div className="text-start">
+                  <div className="shadow-lg border m-2 rounded p-2">
+                    <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                      <div className="text-start flex px-1">
+                        <label className="w-32 mt-4 font-bold text-xs">
+                          PLACE OF BIRTH
+                        </label>
+                        <select className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full">
+                          {birthPlaceList?.map((district, i) => (
+                            <option key={i} value={district?.div_code}>
+                              {district?.division_name} - {district?.div_code}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div class=" mb-0 flex grid grid-cols-1 rounded     mt-1 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-2">
+                      <div className="bg-white col-span-2 flex align-items-center m-1  lg:mt-0">
+                        <label className="w-36 mt-4 font-bold text-xs">
+                          DATE OF BIRTH
+                        </label>
+                        <input
+                          type="date"
+                          id="success"
+                          value={birth_date}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          onChange={handleBirthDateChange}
+                        />
+                      </div>
+                      <div className="bg-white flex  justify-content-end m-1  lg:mt-0">
+                        <label className="w-16  mt-4 font-bold text-xs">
+                          AGE
+                        </label>
+                        <input
+                          type="text"
+                          id="success"
+                          value={25}
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      </div>
+                    </div>
+
+                    <div class=" mb-0 flex grid grid-cols-1 rounded     mt-1 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                      <div className="text-start flex px-1">
+                        <label className="w-44 text-center  mt-3 font-bold text-xs">
+                          RELIGION
+                        </label>
+
+                        <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                          <>
+                            <option value="1">ISLAM</option>
+                            <option value="2">HINDU</option>
+                            <option value="3">KHRISTAN</option>
+                            <option value="3">BOUDDHA</option>
+                          </>
+                        </select>
+                      </div>
+                      <div className="text-start flex px-1">
+                        <label className="w-24   mt-3 font-bold text-xs">
+                          RESIDENT
+                        </label>
+
+                        <select
+                          onChange={(e) => setResident(e.target.value)}
+                          value={resident}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        >
+                          <>
+                            {locallityList?.map((locallity, i) => (
+                              <option key={i} value={locallity?.locallity_name}>
+                                {locallity?.locallity_name}
+                              </option>
+                            ))}
+                          </>
+                        </select>
+                      </div>
+                      <div className="text-start flex px-1">
+                        <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                          {resident === "OVERSEAS" && (
+                            <>
+                              {countryList?.map((country, i) => (
+                                <option key={i} value={country?.country_id}>
+                                  {country?.country_name}
+                                </option>
+                              ))}
+                            </>
+                          )}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-start px-0">
+                <div className="text-start">
+                  <div className="text-start px-0">
+                    <div className="shadow-lg border m-2 rounded p-2">
+                      <div class=" mb-0 flex grid grid-cols-1 rounded     mt-1 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                        <div className="text-start flex px-0">
+                          <label className="w-32   mt-3 font-bold text-xs">
+                            OCCUPATION
+                          </label>
+
+                          <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                            {occupationList?.map((occupation, i) => (
+                              <option
+                                key={i}
+                                value={occupation?.occupation_name}
+                              >
+                                {occupation?.occupation_name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="text-start flex px-1">
+                          <label className="w-32 text-center  mt-3 font-bold text-xs">
+                            EDUCATION
+                          </label>
+
+                          <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                            <>
+                              <option value="1">URBAN</option>
+                              <option value="2">RURAL</option>
+                              <option value="3">OVERSEAS</option>
+                            </>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-2">
                         <div className="bg-white flex align-items-center m-1  lg:mt-0">
                           <label className="w-28 mt-4 font-bold text-xs">
                             MOB. NO.{" "}
