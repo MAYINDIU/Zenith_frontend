@@ -6,6 +6,7 @@ import {
   useGetBranchlistQuery,
   useGetCountrylistQuery,
   useGetDistrictlisttQuery,
+  useGetEducationListQuery,
   useGetGenderQuery,
   useGetLocallityQuery,
   useGetOccupationlistQuery,
@@ -26,6 +27,8 @@ const Index = () => {
   const [proposal_date, setProposalDate] = useState();
   const [birth_date, setBirthDate] = useState();
   const [resident, setResident] = useState();
+
+  console.log(agentValue);
 
   const [district, setDistrict] = useState();
   const [thana, setThana] = useState();
@@ -99,10 +102,6 @@ const Index = () => {
     }
   }, [proposalInfo]);
 
-  const handleAgentChange = (e) => {
-    setAgentValue(e.target.value);
-  };
-
   const proposer = proposalInfo[0]?.proposer;
   // get proposal informations
   const handleProposalNo = (e) => {
@@ -152,7 +151,7 @@ const Index = () => {
   const { data: locallityList } = useGetLocallityQuery();
   const { data: countryList } = useGetCountrylistQuery();
   const { data: occupationList } = useGetOccupationlistQuery();
-
+  const { data: educationList } = useGetEducationListQuery();
   // console.log(genderList);
 
   const { data: thanaList } = useGetThanalistQuery(
@@ -179,8 +178,8 @@ const Index = () => {
       title: "PREMIUM INFO",
     },
     {
-      code: "PRVM",
-      title: "PRVM NOMINEE",
+      code: "PRBM",
+      title: "PRBM NOMINEE",
     },
     {
       code: "CD",
@@ -190,7 +189,10 @@ const Index = () => {
   return (
     <div>
       <Navbar />
-      <h1 className=" shadow-lg text-dark w-full px-5 lg:w-72  mx-auto p-2 mt-5 rounded text-center">
+      <h1
+        style={{ fontFamily: "sans-serif" }}
+        className=" shadow-lg font-bold text-dark w-full px-5 lg:w-72  mx-auto p-2 mt-5 rounded text-center"
+      >
         PROPOSAL ENTRY FORM
       </h1>
 
@@ -378,24 +380,12 @@ const Index = () => {
                 />
               )}
             </div>
-
-            {/* 
-            <div className="text-start px-2">
-              <label className="text-start text-xs">AGENT</label>
-              <input
-                type="text"
-                id="success"
-                className="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                value={agentValue}
-                onChange={handleAgentChange}
-              />
-            </div> */}
           </div>
 
           <div className="shadow-lg m-2 border mt-5">
             <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center lg:mx-auto lg:mt-0">
               <div className="text-start px-0">
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="text-start px-2">
                     <label className="text-start text-xs">GENDER</label>
 
@@ -425,6 +415,14 @@ const Index = () => {
                       <option value={"name"}>WIDOWED</option>
                       <option value={"name"}>DEVORCED</option>
                     </select>
+                  </div>
+                  <div className="text-start px-2">
+                    <label className="text-start text-xs">MARRIAGE DATE</label>
+                    <input
+                      type="date"
+                      id="success"
+                      className="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                    />
                   </div>
                 </div>
 
@@ -840,7 +838,7 @@ const Index = () => {
                       </div>
                     </div>
 
-                    <div class=" mb-0 flex grid grid-cols-1 rounded     mt-1 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                    <div class=" mb-0 flex grid grid-cols-1 rounded     mt-1 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-2">
                       <div className="text-start flex px-1">
                         <label className="w-44 text-center  mt-3 font-bold text-xs">
                           RELIGION
@@ -895,8 +893,8 @@ const Index = () => {
               <div className="text-start px-0">
                 <div className="text-start">
                   <div className="text-start px-0">
-                    <div className="shadow-lg border m-2 rounded p-2">
-                      <div class=" mb-0 flex grid grid-cols-1 rounded     mt-1 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                    <div className="shadow-lg border m-2 rounded p-0">
+                      <div class=" mb-0 flex grid grid-cols-1 rounded p-2    mt-1 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                         <div className="text-start flex px-0">
                           <label className="w-32   mt-3 font-bold text-xs">
                             OCCUPATION
@@ -919,49 +917,81 @@ const Index = () => {
                           </label>
 
                           <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                            <>
-                              <option value="1">URBAN</option>
-                              <option value="2">RURAL</option>
-                              <option value="3">OVERSEAS</option>
-                            </>
+                            {educationList?.map((education, i) => (
+                              <option key={i} value={education?.education_name}>
+                                {education?.education_name}
+                              </option>
+                            ))}
                           </select>
                         </div>
                       </div>
 
-                      <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-2">
+                      <hr className="mt-2  bg-[#333]" />
+                      <div class=" mb-0 flex grid grid-cols-1 rounded  p-2   mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-2">
+                        <div class="flex border items-center shadow p-2 mb-0">
+                          <input
+                            id="default-checkbox"
+                            type="checkbox"
+                            value=""
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="default-checkbox"
+                            class="ms-2 ml-2  text-sm font-medium text-gray-900 dark:text-gray-300"
+                          >
+                            FIRST PREGNANCY
+                          </label>
+                        </div>
+                        <div class="flex border items-center ml-2 shadow p-2 mb-0">
+                          <input
+                            id="default-checkbox"
+                            type="checkbox"
+                            value=""
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="default-checkbox"
+                            class="ms-2 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                          >
+                            MINORITY
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class=" mb-0 flex grid grid-cols-1 rounded  p-2   mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                        <div class="flex border items-center shadow p-2 mb-2">
+                          <input
+                            id="default-checkbox"
+                            type="checkbox"
+                            value=""
+                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                          <label
+                            for="default-checkbox"
+                            class="ms-2 ml-2  text-sm font-medium text-gray-900 dark:text-gray-300"
+                          >
+                            LIEN
+                          </label>
+                        </div>
+
                         <div className="bg-white flex align-items-center m-1  lg:mt-0">
                           <label className="w-28 mt-4 font-bold text-xs">
-                            MOB. NO.{" "}
+                            LIEN%
                           </label>
                           <input
                             type="text"
                             id="success"
-                            value={proposalInfo[0]?.mobile}
-                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
                           />
                         </div>
                         <div className="bg-white flex  align-items-center m-1  lg:mt-0">
                           <label className="w-20  mt-4 font-bold text-xs">
-                            TEL NO.{" "}
+                            YEARS
                           </label>
                           <input
                             type="text"
                             id="success"
-                            value={proposalInfo[0]?.nid_number}
-                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                          />
-                        </div>
-                      </div>
-                      <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                        <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                          <label className="w-24 mt-4 font-bold text-xs">
-                            EMAIL{" "}
-                          </label>
-                          <input
-                            type="text"
-                            id="success"
-                            value={proposalInfo[0]?.nid_number}
-                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
                           />
                         </div>
                       </div>
@@ -970,6 +1000,14 @@ const Index = () => {
                 </div>
               </div>
             </div>
+          </div>
+          <div className="text-center">
+            <button
+              type="button"
+              class="rounded text-end btn-sm focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-10 py-2 mt-2 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            >
+              SUBMIT
+            </button>
           </div>
         </div>
       )}

@@ -165,7 +165,6 @@ const Modulelist = () => {
       <div class="p-4 grid grid-cols-1 shadow-md rounded    mt-0 lg:grid-cols-2 gap-0  w-full lg:w-[600px] justify-center  lg:mx-auto lg:mt-2">
         <div className="flex items-center gap-2">
           <Radio
-            checked
             onChange={(e) => setPermissionType(e.target.value)}
             id="permission"
             name="countries"

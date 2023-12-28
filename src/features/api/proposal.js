@@ -2,12 +2,20 @@ import { apiSlice } from "./apiSlice";
 
 const proposal = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getEducationList: builder.query({
+      query: () => ({
+        url: "/educationList",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+
     getOccupationlist: builder.query({
       query: () => ({
         url: "/occupation",
       }),
       providesTags: ["proposal_head"],
     }),
+
     getCountrylist: builder.query({
       query: () => ({
         url: "/country",
@@ -68,6 +76,7 @@ const proposal = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetEducationListQuery,
   useGetOccupationlistQuery,
   useGetCountrylistQuery,
   useGetLocallityQuery,
