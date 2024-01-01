@@ -72,10 +72,19 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
+    createProposalEntry: builder.mutation({
+      query: (data) => ({
+        url: `/proposal-entry`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["proposal_head"],
+    }),
   }),
 });
 
 export const {
+  useCreateProposalEntryMutation,
   useGetEducationListQuery,
   useGetOccupationlistQuery,
   useGetCountrylistQuery,

@@ -8,7 +8,7 @@ const dept_head_api = apiSlice.injectEndpoints({
       }),
       providesTags: ["dept_head"],
     }),
-    
+
     getDeptPermissionList: builder.query({
       query: (module_id) => ({
         url: `/getDeptPermissionList/${module_id}`,
@@ -35,7 +35,6 @@ const dept_head_api = apiSlice.injectEndpoints({
       }),
       providesTags: ["dept_head"],
     }),
-    
 
     getDepartmentHead: builder.query({
       query: () => ({
@@ -52,6 +51,7 @@ const dept_head_api = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["dept_head"],
     }),
+
     removeSingleCart: builder.mutation({
       query: (id) => ({
         url: `/cartlist_delete/${id}`,

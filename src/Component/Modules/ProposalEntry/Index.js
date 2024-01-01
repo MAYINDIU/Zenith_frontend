@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../Nabar/Navbar";
 import { Button, Dropdown, Label, Radio, TextInput } from "flowbite-react";
 import {
+  useCreateProposalEntryMutation,
   useGetAgentlistQuery,
   useGetBranchlistQuery,
   useGetCountrylistQuery,
@@ -15,6 +16,7 @@ import {
   useGetThanalistQuery,
 } from "../../../features/api/proposal";
 import axios from "axios";
+import swal from "sweetalert";
 
 const Index = () => {
   const [projectId, setProjectId] = useState("");
@@ -27,27 +29,51 @@ const Index = () => {
   const [proposal_date, setProposalDate] = useState();
   const [birth_date, setBirthDate] = useState();
   const [resident, setResident] = useState();
-
-  console.log(agentValue);
-
   const [district, setDistrict] = useState();
   const [thana, setThana] = useState();
   const [postOffice, setPostoffice] = useState();
-
   const [pdistrict, setPDistrict] = useState();
   const [pthana, setPThana] = useState();
   const [ppostOffice, setPPostoffice] = useState();
-  const [policytype, setPolicyType] = useState(3);
-
+  const [policytype, setPolicyType] = useState(1);
   const [risk_date, setRiskdate] = useState();
+  const [proposerName, setProposer] = useState();
+  const [fatherName, setFather] = useState();
+  const [husbandName, setHusband] = useState();
+  const [motherName, setMother] = useState();
+  const [address, setAddress] = useState();
+  const [mobile, setMobile] = useState();
+  const [nid, setNID] = useState();
+  const [age, setAge] = useState();
+  const [occupation, setOccupation] = useState();
+  const [branch, setBranch] = useState();
+  const [education, setEducation] = useState();
+  const [religion, setReligion] = useState();
+  const [country, setCountry] = useState();
+  const [newProposalNo, setNewProposalNo] = useState();
+  const [commencementDate, setUpdateCommDate] = useState();
+
+  const UserD = JSON.parse(localStorage.getItem("UserDetails"));
+  const USER_ID = UserD?.PERSONALID;
+  // console.log(UserD);
 
   const formatAsMMDDYYYY = (dateString) => {
     const dateObj = new Date(dateString);
     const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Add leading zero if needed
     const day = String(dateObj.getDate()).padStart(2, "0"); // Add leading zero if needed
     const year = dateObj.getFullYear();
-    return `${month}-${day}-${year}`;
+    return `${year}${month}${day}`;
   };
+  const formatAsMMDDYYYYy = (dateString) => {
+    const dateObj = new Date(dateString);
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Add leading zero if needed
+    const day = String(dateObj.getDate()).padStart(2, "0"); // Add leading zero if needed
+    const year = dateObj.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+  const comm_datee = formatAsMMDDYYYY(risk_date);
+  // console.log(formatAsMMDDYYYY(commencementDate?.comm_date[0]));
+  // console.log(formatAsMMDDYYYY(proposal_date));
 
   const handleClearClick = () => {
     // Check for any actions causing a page reload
@@ -55,12 +81,110 @@ const Index = () => {
     // ... other logic
   };
 
-  const handleproposalDateChange = (e) => {
-    setProposalDate(e.target.value);
+  const handleCountry = (e) => {
+    setCountry(e.target.value);
+  };
+  const handleMaritalStatus = (e) => {
+    setMaritalStaus(e.target.value);
   };
 
+  const handleReligion = (e) => {
+    setReligion(e.target.value);
+  };
+  const handleEducation = (e) => {
+    setEducation(e.target.value);
+  };
+  const handleBranch = (e) => {
+    setBranch(e.target.value);
+  };
+  const handleOccupation = (e) => {
+    setOccupation(e.target.value);
+  };
+  const handleAge = (e) => {
+    setAge(e.target.value);
+  };
   const handleBirthDateChange = (e) => {
     setBirthDate(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.dob) {
+      setBirthDate(formatAsMMDDYYYY(proposalInfo[0]?.dob));
+    }
+  }, [proposalInfo]);
+
+  const handleNid = (e) => {
+    setNID(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.nid_number) {
+      setNID(proposalInfo[0]?.nid_number);
+    }
+  }, [proposalInfo]);
+
+  const handleMobile = (e) => {
+    setMobile(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.mobile) {
+      setMobile(proposalInfo[0]?.mobile);
+    }
+  }, [proposalInfo]);
+
+  const handleAddress = (e) => {
+    setAddress(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.address1) {
+      setAddress(proposalInfo[0]?.address1);
+    }
+  }, [proposalInfo]);
+
+  const handleMotherName = (e) => {
+    setMother(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.mothers_name) {
+      setMother(proposalInfo[0]?.mothers_name);
+    }
+  }, [proposalInfo]);
+
+  const handleHusband = (e) => {
+    setHusband(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.fatherhusb) {
+      setHusband(proposalInfo[0]?.fatherhusb);
+    }
+  }, [proposalInfo]);
+
+  const handleFather = (e) => {
+    setFather(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.fathers_name) {
+      setFather(proposalInfo[0]?.fathers_name);
+    }
+  }, [proposalInfo]);
+
+  const handleGetProposer = (e) => {
+    setProposer(e.target.value);
+  };
+
+  useEffect(() => {
+    if (proposalInfo[0]?.proposer) {
+      setProposer(proposalInfo[0]?.proposer);
+    }
+  }, [proposalInfo]);
+
+  const handleproposalDateChange = (e) => {
+    setProposalDate(e.target.value);
   };
 
   const handleriskDateChange = (e) => {
@@ -69,12 +193,12 @@ const Index = () => {
 
   useEffect(() => {
     if (proposalInfo[0]?.proposal_date) {
-      setProposalDate(formatAsMMDDYYYY(proposalInfo[0]?.proposal_date));
+      setProposalDate(formatAsMMDDYYYYy(proposalInfo[0]?.proposal_date));
     }
   }, [proposalInfo]);
   useEffect(() => {
     if (proposalInfo[0]?.risk_date) {
-      setRiskdate(formatAsMMDDYYYY(proposalInfo[0]?.risk_date));
+      setRiskdate(formatAsMMDDYYYYy(proposalInfo[0]?.risk_date));
     }
   }, [proposalInfo]);
 
@@ -108,6 +232,7 @@ const Index = () => {
     const newValue = e.target.value;
     setProposalNo(newValue);
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -125,7 +250,6 @@ const Index = () => {
   // get proposal informations
 
   // get chainlist
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -141,6 +265,40 @@ const Index = () => {
     fetchData();
   }, [projectId, agentValue]);
   // get chainlist
+
+  // get new proposal Number
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/proposal-number?OFFICE_CODE=${branch}`
+        );
+        setNewProposalNo(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [branch]);
+  //get new proposal Number
+
+  // get commencement date
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/comm_date/${comm_datee}/${policytype}`
+        );
+        setUpdateCommDate(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [comm_datee, policytype]);
+  // get commencement date
 
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
@@ -186,6 +344,71 @@ const Index = () => {
       title: "OTHER INFO",
     },
   ];
+
+  // Enter proposal Entry
+  const saveProposal = async () => {
+    const pDate = formatAsMMDDYYYY(proposal_date)
+      ? formatAsMMDDYYYY(proposal_date)
+      : "";
+    try {
+      const response = await fetch("http://localhost:5000/api/proposal-entry", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          PROPOSAL_N: newProposalNo?.proposal_no[0]
+            ? newProposalNo?.proposal_no[0]
+            : "",
+          PROPOSAL_D: pDate,
+          RISKDATE: formatAsMMDDYYYY(commencementDate?.comm_date[0])
+            ? formatAsMMDDYYYY(commencementDate?.comm_date[0])
+            : "",
+          PROPOSER: proposerName,
+          FATHERS_NAME: fatherName,
+          FATHERHUSB: fatherName,
+          MOTHERS_NAME: motherName,
+          ADDRESS1: address,
+          POST_CODE_CUR: "12",
+          POST_CODE_PER: "13",
+          CITY: district,
+          MOBILE: mobile,
+          LOCALITY: resident ? resident : "",
+          N_ID_NUMBER: nid,
+          DOB: "19980202",
+          AGE: age,
+          SEX: gender,
+          OCCUPATION: occupation,
+          AGENT_ID: agentValue,
+          BRANCH_ID: branch ? branch : "",
+          USERID: "650",
+          LAST_EDUCATION: "BSC",
+          RELIGION: religion,
+          MARITAL_STATUS: maritalStatus,
+          LOCALITY_COUNTRY: country,
+          SPOUSE: "",
+          PD_CODE: projectId,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      // Handle the response from the server
+      if (data === "Proposal Entry Successfully") {
+        // alert("Proposal Entry Successfully");
+        swal({
+          title: "Proposal Entry Successfully",
+          icon: "success",
+        });
+      } else {
+        console.error("Error saving proposal:", data?.error);
+      }
+    } catch (error) {
+      console.error("Error saving proposal:", error.message);
+    }
+  };
+  // Enter proposal Entry
   return (
     <div>
       <Navbar />
@@ -221,55 +444,34 @@ const Index = () => {
         <div className="shadow-lg border lg:mx-48 mt-1 m-2 ">
           <div class="p-4 flex grid grid-cols-1       mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-2">
             <div className="justify-center  flex gap-2">
-              <div class="flex items-center">
-                <input
+              <div className="flex items-center gap-2">
+                <Radio
                   onChange={(e) => setPolicyType(e.target.value)}
-                  checked
-                  id="default-radio-2"
-                  type="radio"
-                  value={policytype}
-                  name="default-radio"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  id="uk"
+                  name="countries"
+                  value="1"
+                  // Check the radio button if policyType is '1'
                 />
-                <label
-                  for="default-radio-2"
-                  class="ms-2  ml-1 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  CURRENT POLICY
-                </label>
+                <Label htmlFor="uk">CURRENT POLICY</Label>
               </div>
 
-              <div class="flex items-center">
-                <input
+              <div className="flex items-center gap-2">
+                <Radio
                   onChange={(e) => setPolicyType(e.target.value)}
-                  id="default-radio-2"
-                  type="radio"
-                  value={policytype}
-                  name="default-radio"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  id="uk"
+                  name="countries"
+                  value="10"
                 />
-                <label
-                  for="default-radio-2"
-                  class="ms-2 ml-1 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  TP POLICY
-                </label>
+                <Label htmlFor="uk">TP POLICY</Label>
               </div>
-              <div class="flex items-center">
-                <input
+              <div className="flex items-center gap-2">
+                <Radio
                   onChange={(e) => setPolicyType(e.target.value)}
-                  id="default-radio-2"
-                  type="radio"
-                  value={policytype}
-                  name="default-radio"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  id="uk"
+                  name="countries"
+                  value="13"
                 />
-                <label
-                  for="default-radio-2"
-                  class="ms-2 ml-1 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-                  BACK DATE POLICY
-                </label>
+                <Label htmlFor="uk">BACK DATE POLICY</Label>
               </div>
             </div>
 
@@ -303,7 +505,10 @@ const Index = () => {
           <div class="p-1 mb-0 flex grid grid-cols-1 rounded  mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
             <div className="text-start px-2">
               <label className="text-start text-xs">SELECT OFFICE</label>
-              <select className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full">
+              <select
+                onChange={handleBranch}
+                className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full"
+              >
                 {branchList?.map((branchName, i) => (
                   <option key={i} value={branchName?.branch_id}>
                     {branchName?.branch_name} - {branchName?.branch_id}
@@ -389,14 +594,20 @@ const Index = () => {
                   <div className="text-start px-2">
                     <label className="text-start text-xs">GENDER</label>
 
-                    <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                    <select
+                      onChange={(e) => setGender(e.target.value)}
+                      className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    >
                       {gender === "1" && <option value="1">MALE</option>}
                       {gender === "2" && <option value="2">FEMALE</option>}
-                      {gender !== "1" && gender !== "2" && (
+                      {gender === "3" && <option value="3">COMMON</option>}
+                      {gender === "4" && <option value="4">OTHERS</option>}
+                      {!gender && (
                         <>
-                          {genderList?.map((gender, i) => (
-                            <option key={i} value={gender?.gender_id}>
-                              {gender?.gender_name}
+                          <option>Select Gender</option>
+                          {genderList?.map((g, i) => (
+                            <option key={i} value={g?.gender_id}>
+                              {g?.gender_name}
                             </option>
                           ))}
                         </>
@@ -405,15 +616,18 @@ const Index = () => {
                   </div>
                   <div className="text-start px-2">
                     <label className="text-start text-xs">MARITAL STATUS</label>
-                    <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full ">
+                    <select
+                      onChange={handleMaritalStatus}
+                      className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full "
+                    >
                       {maritalStatus === "" && (
                         <option value="1">Select</option>
                       )}
 
-                      <option value={"name"}>SINGLE</option>
-                      <option value={"name"}>MARRIED</option>
-                      <option value={"name"}>WIDOWED</option>
-                      <option value={"name"}>DEVORCED</option>
+                      <option value={1}>SINGLE</option>
+                      <option value={2}>MARRIED</option>
+                      <option value={3}>WIDOWED</option>
+                      <option value={4}>DEVORCED</option>
                     </select>
                   </div>
                   <div className="text-start px-2">
@@ -429,58 +643,96 @@ const Index = () => {
                 <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">PROPOSER</label>
-                    <input
-                      type="text"
-                      id="success"
-                      value={proposer ? proposer : ""}
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                      placeholder="TYPE POLICY HOLDER NAME"
-                    />
+
+                    {proposer ? (
+                      <input
+                        type="text"
+                        id="success"
+                        value={proposer ? proposer : ""}
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleGetProposer}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleGetProposer}
+                      />
+                    )}
                   </div>
                   <div className="bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">HUSBAND/WIFE</label>
-                    <input
-                      type="text"
-                      id="success"
-                      value={
-                        proposalInfo[0]?.fatherhusb
-                          ? proposalInfo[0]?.fatherhusb
-                          : ""
-                      }
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                      placeholder="TYPE SPOUSE'S NAME"
-                    />
+
+                    {proposalInfo[0]?.fatherhusb ? (
+                      <input
+                        type="text"
+                        id="success"
+                        value={
+                          proposalInfo[0]?.fatherhusb
+                            ? proposalInfo[0]?.fatherhusb
+                            : ""
+                        }
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleHusband}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleHusband}
+                      />
+                    )}
                   </div>
                 </div>
                 <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">FATHER</label>
-
-                    <input
-                      type="text"
-                      id="success"
-                      value={
-                        proposalInfo[0]?.fathers_name
-                          ? proposalInfo[0]?.fathers_name
-                          : ""
-                      }
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                      placeholder="TYPE FATHER'S NAME"
-                    />
+                    {proposalInfo[0]?.fathers_name ? (
+                      <input
+                        type="text"
+                        id="success"
+                        value={
+                          proposalInfo[0]?.fathers_name
+                            ? proposalInfo[0]?.fathers_name
+                            : ""
+                        }
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleFather}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleFather}
+                      />
+                    )}
                   </div>
                   <div className="bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">MOTHER</label>
-                    <input
-                      type="text"
-                      id="success"
-                      value={
-                        proposalInfo[0]?.mothers_name
-                          ? proposalInfo[0]?.mothers_name
-                          : ""
-                      }
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                      placeholder="TYPE MOTHER'S NAME"
-                    />
+
+                    {proposalInfo[0]?.mothers_name ? (
+                      <input
+                        type="text"
+                        id="success"
+                        value={
+                          proposalInfo[0]?.mothers_name
+                            ? proposalInfo[0]?.mothers_name
+                            : ""
+                        }
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleMotherName}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        onChange={handleMotherName}
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="text-start">
@@ -512,6 +764,7 @@ const Index = () => {
                           id="success"
                           class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                           placeholder="AGE"
+                          onChange={setAge}
                         />
                       </div>
                     </div>
@@ -566,12 +819,26 @@ const Index = () => {
                         <label className="align-items-center  text-xs">
                           F/H/R/VILLAGE
                         </label>
-                        <input
-                          type="text"
-                          id="success"
-                          value={proposalInfo[0]?.address1}
-                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                        />
+                        {proposalInfo[0]?.address1 ? (
+                          <input
+                            type="text"
+                            id="success"
+                            value={
+                              proposalInfo[0]?.address1
+                                ? proposalInfo[0]?.address1
+                                : ""
+                            }
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            onChange={handleAddress}
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            id="success"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            onChange={handleAddress}
+                          />
+                        )}
                       </div>
                     </div>
 
@@ -719,12 +986,26 @@ const Index = () => {
                         <label className="w-36 font-bold mt-4 text-xs">
                           ID TYPE & NUMBER{" "}
                         </label>
-                        <input
-                          type="text"
-                          id="success"
-                          value={proposalInfo[0]?.nid_number}
-                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                        />
+                        {proposalInfo[0]?.nid_number ? (
+                          <input
+                            type="text"
+                            id="success"
+                            value={
+                              proposalInfo[0]?.nid_number
+                                ? proposalInfo[0]?.nid_number
+                                : ""
+                            }
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            onChange={handleNid}
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            id="success"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            onChange={handleNid}
+                          />
+                        )}
                       </div>
                     </div>
 
@@ -754,12 +1035,31 @@ const Index = () => {
                           <label className="w-28 mt-4 font-bold text-xs">
                             MOB. NO.{" "}
                           </label>
-                          <input
-                            type="text"
-                            id="success"
-                            value={proposalInfo[0]?.mobile}
-                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                          />
+
+                          {proposalInfo[0]?.mobile ? (
+                            <input
+                              type="number"
+                              id="success"
+                              maxLength={11}
+                              minLength={11}
+                              value={
+                                proposalInfo[0]?.mobile
+                                  ? proposalInfo[0]?.mobile
+                                  : ""
+                              }
+                              class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                              onChange={handleMobile}
+                            />
+                          ) : (
+                            <input
+                              type="numnber"
+                              id="success"
+                              maxLength={11}
+                              minLength={11}
+                              class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                              onChange={handleMobile}
+                            />
+                          )}
                         </div>
                         <div className="bg-white flex  align-items-center m-1  lg:mt-0">
                           <label className="w-20  mt-4 font-bold text-xs">
@@ -817,13 +1117,23 @@ const Index = () => {
                         <label className="w-36 mt-4 font-bold text-xs">
                           DATE OF BIRTH
                         </label>
-                        <input
-                          type="date"
-                          id="success"
-                          value={birth_date}
-                          className="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                          onChange={handleBirthDateChange}
-                        />
+
+                        {birth_date ? (
+                          <input
+                            type="text"
+                            id="success"
+                            value={birth_date}
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            onChange={handleBirthDateChange}
+                          />
+                        ) : (
+                          <input
+                            type="date"
+                            id="success"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                            onChange={handleBirthDateChange}
+                          />
+                        )}
                       </div>
                       <div className="bg-white flex  justify-content-end m-1  lg:mt-0">
                         <label className="w-16  mt-4 font-bold text-xs">
@@ -832,7 +1142,7 @@ const Index = () => {
                         <input
                           type="text"
                           id="success"
-                          value={25}
+                          onChange={handleAge}
                           class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
@@ -844,12 +1154,15 @@ const Index = () => {
                           RELIGION
                         </label>
 
-                        <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                        <select
+                          onChange={handleReligion}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        >
                           <>
-                            <option value="1">ISLAM</option>
-                            <option value="2">HINDU</option>
-                            <option value="3">KHRISTAN</option>
-                            <option value="3">BOUDDHA</option>
+                            <option value="ISLAM">ISLAM</option>
+                            <option value="HINDU">HINDU</option>
+                            <option value="KHRISTAN">KHRISTAN</option>
+                            <option value="BOUDDHA">BOUDDHA</option>
                           </>
                         </select>
                       </div>
@@ -865,7 +1178,7 @@ const Index = () => {
                         >
                           <>
                             {locallityList?.map((locallity, i) => (
-                              <option key={i} value={locallity?.locallity_name}>
+                              <option key={i} value={locallity?.locallity_id}>
                                 {locallity?.locallity_name}
                               </option>
                             ))}
@@ -873,11 +1186,14 @@ const Index = () => {
                         </select>
                       </div>
                       <div className="text-start flex px-1">
-                        <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                          {resident === "OVERSEAS" && (
+                        <select
+                          onChange={handleCountry}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        >
+                          {resident === "3" && (
                             <>
                               {countryList?.map((country, i) => (
-                                <option key={i} value={country?.country_id}>
+                                <option key={i} value={country?.country_name}>
                                   {country?.country_name}
                                 </option>
                               ))}
@@ -900,7 +1216,10 @@ const Index = () => {
                             OCCUPATION
                           </label>
 
-                          <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                          <select
+                            onChange={handleOccupation}
+                            className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                          >
                             {occupationList?.map((occupation, i) => (
                               <option
                                 key={i}
@@ -916,7 +1235,10 @@ const Index = () => {
                             EDUCATION
                           </label>
 
-                          <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                          <select
+                            onChange={handleEducation}
+                            className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                          >
                             {educationList?.map((education, i) => (
                               <option key={i} value={education?.education_name}>
                                 {education?.education_name}
@@ -1003,7 +1325,8 @@ const Index = () => {
           </div>
           <div className="text-center">
             <button
-              type="button"
+              onClick={saveProposal}
+              type="submit"
               class="rounded text-end btn-sm focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-10 py-2 mt-2 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
             >
               SUBMIT
