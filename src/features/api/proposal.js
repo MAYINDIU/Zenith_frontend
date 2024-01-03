@@ -8,6 +8,12 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
+    getPlanlist: builder.query({
+      query: () => ({
+        url: "/all-plan",
+      }),
+      providesTags: ["proposal_head"],
+    }),
 
     getOccupationlist: builder.query({
       query: () => ({
@@ -53,10 +59,15 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
-
     getAgentlist: builder.query({
       query: (BASE_PROJECT) => ({
         url: `/agent-list/${BASE_PROJECT}`,
+      }),
+      providesTags: ["proposal_head"],
+    }),
+    getModelist: builder.query({
+      query: (PLAN_ID) => ({
+        url: `/mode-list/${PLAN_ID}`,
       }),
       providesTags: ["proposal_head"],
     }),
@@ -84,6 +95,8 @@ const proposal = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetModelistQuery,
+  useGetPlanlistQuery,
   useCreateProposalEntryMutation,
   useGetEducationListQuery,
   useGetOccupationlistQuery,

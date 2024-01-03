@@ -6,6 +6,7 @@ import {
   Dropdown,
   Label,
   Radio,
+  Table,
   TextInput,
 } from "flowbite-react";
 import {
@@ -17,7 +18,9 @@ import {
   useGetEducationListQuery,
   useGetGenderQuery,
   useGetLocallityQuery,
+  useGetModelistQuery,
   useGetOccupationlistQuery,
+  useGetPlanlistQuery,
   useGetPostofficelistQuery,
   useGetProjectlistQuery,
   useGetThanalistQuery,
@@ -59,6 +62,7 @@ const Index = () => {
   const [country, setCountry] = useState();
   const [newProposalNo, setNewProposalNo] = useState();
   const [commencementDate, setUpdateCommDate] = useState();
+  const [planName, setPlan] = useState();
 
   const UserD = JSON.parse(localStorage.getItem("UserDetails"));
   const USER_ID = UserD?.PERSONALID;
@@ -88,9 +92,13 @@ const Index = () => {
     // ... other logic
   };
 
+  const handlePlan = (e) => {
+    setPlan(e.target.value);
+  };
   const handleCountry = (e) => {
     setCountry(e.target.value);
   };
+
   const handleMaritalStatus = (e) => {
     setMaritalStaus(e.target.value);
   };
@@ -310,6 +318,9 @@ const Index = () => {
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
   const { data: agentList } = useGetAgentlistQuery(projectId);
+  const { data: modeList } = useGetModelistQuery(planName);
+  console.log(modeList);
+
   const { data: districtList } = useGetDistrictlisttQuery();
   const { data: birthPlaceList } = useGetDistrictlisttQuery();
   const { data: genderList } = useGetGenderQuery();
@@ -317,6 +328,8 @@ const Index = () => {
   const { data: countryList } = useGetCountrylistQuery();
   const { data: occupationList } = useGetOccupationlistQuery();
   const { data: educationList } = useGetEducationListQuery();
+  const { data: planList } = useGetPlanlistQuery();
+
   // console.log(genderList);
 
   const { data: thanaList } = useGetThanalistQuery(
@@ -357,6 +370,30 @@ const Index = () => {
     const pDate = formatAsMMDDYYYY(proposal_date)
       ? formatAsMMDDYYYY(proposal_date)
       : "";
+
+    // Check for required data before making the API call
+    if (
+      !proposerName ||
+      !address ||
+      !mobile ||
+      !nid ||
+      !age ||
+      !gender ||
+      !occupation ||
+      !agentValue ||
+      !religion ||
+      !maritalStatus ||
+      !country ||
+      !projectId
+    ) {
+      // Show an alert indicating missing data
+      swal({
+        title: "Error",
+        text: "Please fill in all required fields",
+        icon: "error",
+      });
+      return;
+    }
     try {
       const response = await fetch("http://localhost:5000/api/proposal-entry", {
         method: "POST",
@@ -1350,28 +1387,21 @@ const Index = () => {
                 <h2 className=" text-center font-bold text-success  p-2 rounded text-xs text-dark">
                   PREMIUM CALCULATION
                 </h2>
-                <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <label className="text-start text-xs lg:ml-1">
-                    PLAN DESCRIPTION
-                  </label>
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                    />
-                  </div>
-                </div>
 
                 <div class="p-0 mb-0 flex grid grid-cols-1 rounded  mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="text-start px-2">
                     <label className="text-start text-xs">PLAN LIST</label>
-                    <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                    <select
+                      onChange={handlePlan}
+                      className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    >
                       <>
-                        <option>Select PLAN</option>
-                        <option>Select PLAN</option>
-                        <option>Select PLAN</option>
-                        <option>Select PLAN</option>
+                        <option>Select Plan</option>
+                        {planList?.map((plan, i) => (
+                          <option key={i} value={plan?.plan_id}>
+                            {plan?.plan_id}-{plan?.plan_name}
+                          </option>
+                        ))}
                       </>
                     </select>
                   </div>
@@ -1394,34 +1424,26 @@ const Index = () => {
                     <input
                       type="text"
                       id="success"
-                      value={""}
                       class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                     />
                   </div>
                 </div>
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="col-span-2 bg-white align-items-center m-1  lg:mt-0">
+                <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className=" bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">PAYMENT MODE</label>
                     <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
                       <>
-                        <option>Select PLAN</option>
-                        <option>Select PLAN</option>
-                        <option>Select PLAN</option>
-                        <option>Select PLAN</option>
+                        <option>Select Mode</option>
+                        {modeList?.map((mode, i) => (
+                          <option key={i} value={mode?.plan_id}>
+                            {mode?.mode_code}-{mode?.mode_name}
+                          </option>
+                        ))}
                       </>
                     </select>
                   </div>
-                  <div className="w-full lg:w-full bg-white align-items-center m-1  lg:mt-0">
-                    <label className="text-start text-xs">PLAN NAME</label>
-                    <input
-                      type="text"
-                      id="success"
-                      value={""}
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                    />
-                  </div>
                 </div>
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                <div class="p-1 mb-8 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="col-span-2 bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">
                       TOTAL INSTALLMENT
@@ -1445,10 +1467,10 @@ const Index = () => {
                 </div>
               </div>
 
-              <div className="text-start mb-4">
+              <div className="text-start mt-28 mb-2">
                 <div className="shadow border-2  m-0 rounded p-1">
                   <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <div className="bg-white align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-start w-44 mt-3 p-0">
                         SUM ASSURED
                       </label>
@@ -1459,7 +1481,7 @@ const Index = () => {
                       />
                     </div>
 
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <div className="bg-white  align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-start w-16 mt-3 p-0">
                         RATE
                       </label>
@@ -1469,7 +1491,7 @@ const Index = () => {
                         class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <div className="bg-white  align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-center w-16 mt-3 p-0">
                         FACTOR
                       </label>
@@ -1482,7 +1504,7 @@ const Index = () => {
                     </div>
                   </div>
                   <div class=" mb-2 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <div className="bg-white  align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-start w-40 mt-3 p-0">
                         BASIC PREMIUM
                       </label>
@@ -1493,7 +1515,7 @@ const Index = () => {
                       />
                     </div>
 
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <div className="bg-white  align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-center w-36 mt-3 p-0">
                         SUM AT RISK
                       </label>
@@ -1623,12 +1645,12 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                       <input
                         type="text"
                         id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] ml-1 mt-1 w-full"
+                        class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
                       />
                     </div>
 
@@ -1640,7 +1662,7 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
                   </div>
@@ -1652,7 +1674,7 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
 
@@ -1664,13 +1686,925 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
                   </div>
                 </div>
               </div>
+
+              <div className="text-start mb-4">
+                <div className="shadow-lg border m-1 rounded p-1">
+                  <h2 className="text-xs font-bold ml-2">EXTRA PREMIUM</h2>
+
+                  <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-80 mt-3 p-0">
+                        OE RATE & PREM
+                      </label>
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
+                      />
+                    </div>
+
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-3/4 mt-3 p-0">
+                        H. RATE & PREM
+                      </label>
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
+                      />
+                    </div>
+                  </div>
+                  <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-36 mt-3 p-0">
+                        EXT. PREM
+                      </label>
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    </div>
+
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-32 mt-3 p-0">
+                        TOTAL EXTRA
+                      </label>
+
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="text-start mb-4">
+                <div className="shadow-lg border m-1 rounded p-1">
+                  <h2 className="text-xs font-bold ml-2">
+                    OPTION & POLICY STATUS
+                  </h2>
+
+                  <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
+                    <div className=" flex gap-2">
+                      <div className="flex items-center gap-2">
+                        <Radio
+                          id="uk"
+                          name="countries"
+                          value="1"
+                          // Check the radio button if policyType is '1'
+                        />
+                        <Label htmlFor="uk">A</Label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Radio id="uk" name="countries" value="10" />
+                        <Label htmlFor="uk">B</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Radio id="uk" name="countries" value="13" />
+                        <Label htmlFor="uk">C</Label>
+                      </div>
+                    </div>
+                    <div className=" flex gap-2">
+                      <div className="flex items-center gap-2">
+                        <Radio
+                          id="ukS"
+                          name="CS"
+                          value="1"
+                          // Check the radio button if policyType is '1'
+                        />
+                        <Label htmlFor="ukS">STANDARD</Label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Radio id="ukS" name="CS" value="10" />
+                        <Label htmlFor="ukS">SUBSTANDARD</Label>
+                      </div>
+                    </div>
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start ml-5 w-48 mt-3 p-0">
+                        TOTAL PREM.
+                      </label>
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    </div>
+                  </div>
+                  <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-36 mt-3 p-0">
+                        EXT. PREM
+                      </label>
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    </div>
+
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-32 mt-3 p-0">
+                        TOTAL EXTRA
+                      </label>
+
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    </div>
+                  </div>
+                  <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-36 mt-3 p-0">
+                        STATUS
+                      </label>
+                      <input
+                        type="text"
+                        id="success"
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    </div>
+
+                    <div className="justify-center flex gap-2">
+                      <div className="flex items-center gap-2">
+                        <Radio
+                          id="ukS"
+                          name="CS"
+                          value="1"
+                          // Check the radio button if policyType is '1'
+                        />
+                        <Label htmlFor="ukS">MEDICAL</Label>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Radio id="ukS" name="CS" value="10" />
+                        <Label htmlFor="ukS">NON MEDICAL</Label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+          <div className="text-center">
+            <button
+              onClick={saveProposal}
+              type="submit"
+              class="rounded text-end btn-sm focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-10 py-2 mt-2 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            >
+              SUBMIT
+            </button>
+          </div>
+        </div>
+      )}
+      {selectedTopbarItem === "PRBM" && (
+        <div className="shadow-lg border lg:mx-48 mt-1 m-2">
+          <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center lg:mx-auto lg:mt-0">
+            <div className="text-start  px-2">
+              <div className="shadow border-2 h-[210px] rounded p-1 mt-2 mb-3">
+                <h2 className=" text-start font-bold text-success  p-1 rounded text-xs text-dark">
+                  SETUP
+                </h2>
+                <div class="p-1 mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <label className=" text-start text-xs lg:ml-1">
+                      DESIGNATION
+                    </label>
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                    />
+                  </div>
+
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <label className=" text-start text-xs lg:ml-1">NAME</label>
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                    />
+                  </div>
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <label className=" text-start text-xs lg:ml-1">CODE</label>
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                    />
+                  </div>
+                </div>
+                <div class="p-1 mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                </div>
+                <div class="p-1 mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                  <div className="bg-white align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="  text-start px-2 mb-3">
+              <div class="h-[210px] p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
+                <div className="text-start bg-gray mb-4 m-1">
+                  <div className="shadow border-2   m-0 rounded p-0">
+                    <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                        <label className="text-xs text-center w-48 mt-3 p-0">
+                          DEPOSIT
+                        </label>
+                        <input
+                          type="text"
+                          id="success"
+                          class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      </div>
+
+                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                        <label className="text-xs text-center w-48 mt-3 p-0">
+                          SUSPENSE
+                        </label>
+                        <input
+                          type="text"
+                          id="success"
+                          class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      </div>
+                    </div>
+
+                    <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                        <label className="text-xs text-start w-48 mt-3 p-0">
+                          NEXT PREM DATE
+                        </label>
+                        <input
+                          type="text"
+                          id="success"
+                          class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      </div>
+
+                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                        <label className="text-xs text-start w-48 mt-3 p-0">
+                          MATURITY DATE
+                        </label>
+                        <input
+                          type="text"
+                          id="success"
+                          class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      </div>
+                    </div>
+                    <div class=" mb-3 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                      <div className="bg-white  justify-center flex align-items-center m-1  lg:mt-0">
+                        <button
+                          type="submit"
+                          class="rounded text-end btn-sm focus:outline-none text-dark bg-green-100 hover:bg-green-100 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-10 py-2 mt-2 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-100 dark:focus:ring-green-800"
+                        >
+                          NOMINEE ENTRY
+                        </button>
+                        <button
+                          type="submit"
+                          class="rounded text-end btn-sm focus:outline-none text-dark bg-green-100 hover:bg-green-100 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-10 py-2 mt-2 me-2 ml-2 mb-2 dark:bg-green-100 dark:hover:bg-green-100 dark:focus:ring-green-800"
+                        >
+                          PRBM ENTRY
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center lg:mx-auto lg:mt-0">
+            <div className="overflow-x-auto px-4">
+              <Table className="border bordered">
+                <Table.Head>
+                  <Table.HeadCell>RELATION</Table.HeadCell>
+                  <Table.HeadCell>QTY</Table.HeadCell>
+                  <Table.HeadCell>PRESENT HEALTH STATUS</Table.HeadCell>
+                  <Table.HeadCell>AGE</Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y">
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Father
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Mother
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Brother
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Sister
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Husb/Wife
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Son
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Daughter
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                </Table.Body>
+              </Table>
+            </div>
+            <div className="overflow-x-auto px-4">
+              <Table className="border bordered">
+                <Table.Head>
+                  <Table.HeadCell>AGE AT DEATH</Table.HeadCell>
+                  <Table.HeadCell>CAUSE OF DEATH</Table.HeadCell>
+                  <Table.HeadCell>DURATION OF DEASEAS</Table.HeadCell>
+                  <Table.HeadCell>DEATH OF YEAR</Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y">
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell>
+                      <div className="w-24">
+                        <input
+                          type="text"
+                          id="success"
+                          class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        />
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="w-24">
+                        <input
+                          type="text"
+                          id="success"
+                          class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        />
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="pr-1 justify-right w-24">
+                        <input
+                          type="text"
+                          id="success"
+                          class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        />
+                      </div>
+                    </Table.Cell>
+                    <Table.Cell>
+                      <div className="pr-1 justify-right w-24">
+                        <input
+                          type="text"
+                          id="success"
+                          class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        />
+                      </div>
+                    </Table.Cell>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Brother
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Sister
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Husb/Wife
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Son
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                  <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                    <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                      Daughter
+                    </Table.Cell>
+                    <div className="w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8 form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                    <Table.Cell>
+                      <div className="flex">
+                        <div className="flex items-center gap-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Good
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1  ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Sick
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-1 ml-1">
+                          <Checkbox id="promotion" />
+                          <Label className="italic" htmlFor="promotion">
+                            Late
+                          </Label>
+                        </div>
+                      </div>
+                    </Table.Cell>
+                    <div className="pr-1 justify-right w-16">
+                      <input
+                        type="text"
+                        id="success"
+                        class="h-8  form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
+                      />
+                    </div>
+                  </Table.Row>
+                </Table.Body>
+              </Table>
+            </div>
+          </div>
+
+          <div className="text-center mt-5">
+            <button
+              type="submit"
+              class="rounded text-end btn-sm focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-10 py-2 mt-5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+            >
+              SUBMIT
+            </button>
           </div>
         </div>
       )}
