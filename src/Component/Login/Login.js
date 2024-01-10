@@ -66,8 +66,8 @@ const Login = () => {
 
   return (
     <div>
-      <div class="flex justify-center lg:mt-36">
-        <div class="block shadow-xl w-1/2 lg:w-1/2  bordered rounded p-3 lg:p-10 rounded bordered shadow-xl bg-white max-w-lg">
+      <div class="flex justify-center mx-6 mt-24 lg:mx-0 lg:mt-36">
+        <div class="block shadow-xl w-full lg:w-1/2  bordered rounded p-3 lg:p-10 rounded bordered shadow-xl bg-white max-w-lg">
           <form onSubmit={login} className="flex w-full flex-col gap-4">
             <div className="flex justify-center">
               <img
