@@ -13,6 +13,7 @@ import {
   useGetOccupationlistQuery,
   useGetPlanlistQuery,
   useGetPostofficelistQuery,
+  useGetPremiumListQuery,
   useGetProjectlistQuery,
   useGetThanalistQuery,
 } from "../../../features/api/proposal";
@@ -60,13 +61,18 @@ const Index = () => {
   const [pmode, setPaymode] = useState();
   const [t_installment, setInstallment] = useState();
   const [selectTerm, setTerm] = useState();
+  const [calcuType, setCalcuType] = useState();
+  const [rate, setRate] = useState();
+  console.log(rate);
   // console.log(selectTerm, pmode);
+  // console.log(calcuType);
 
   const totalInstallment = t_installment?.total_install[0];
   // console.log(totalInstallment);
   const calcuAge = calAge?.age[0];
-
-  // console.log(premage);
+  const pRate = rate?.[0];
+  const pFactor = rate?.[1];
+  console.log(pRate, pFactor);
 
   const UserD = JSON.parse(localStorage.getItem("UserDetails"));
   const USER_ID = UserD?.PERSONALID;
@@ -111,7 +117,10 @@ const Index = () => {
     setPremAge(e.target.value);
   };
   const handlePlan = (e) => {
-    setPlan(e.target.value);
+    const value = e.target.value;
+    const [planId, calcuType] = value.split("-");
+    setPlan(planId);
+    setCalcuType(calcuType);
   };
   const handleCountry = (e) => {
     setCountry(e.target.value);
@@ -315,6 +324,23 @@ const Index = () => {
   }, [projectId, agentValue]);
   // get chainlist
 
+  // get rate calculation
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/rate-calculation/${calcuAge}/${selectTerm}/${planName}`
+        );
+        setRate(response?.data?.rate);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [calcuAge, selectTerm, planName]);
+  // get rate calculation
+
   // get age
   useEffect(() => {
     const fetchData = async () => {
@@ -396,6 +422,7 @@ const Index = () => {
   const { data: occupationList } = useGetOccupationlistQuery();
   const { data: educationList } = useGetEducationListQuery();
   const { data: planList } = useGetPlanlistQuery();
+  const { data: premiumList } = useGetPremiumListQuery();
 
   // console.log(genderList);
 
@@ -1466,7 +1493,10 @@ const Index = () => {
                       <>
                         <option>Select Plan</option>
                         {planList?.map((plan, i) => (
-                          <option key={i} value={plan?.plan_id}>
+                          <option
+                            key={i}
+                            value={`${plan?.plan_id}-${plan?.calcu_type}`}
+                          >
                             {plan?.plan_id}-{plan?.plan_name}
                           </option>
                         ))}
@@ -1554,6 +1584,27 @@ const Index = () => {
 
               <div className="text-start mt-28 mb-2">
                 <div className="shadow border-2  m-0 rounded p-1">
+                  {calcuType === "P" && (
+                    <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                      <div className="w-full lg:w-full bg-white align-items-center m-1  lg:mt-0">
+                        <select
+                          // onChange={handlePaymode}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        >
+                          <>
+                            <option>Select Premium</option>
+
+                            {premiumList?.map((prem, i) => (
+                              <option key={i} value={prem?.premium}>
+                                Premium Tk-{prem?.premium}
+                              </option>
+                            ))}
+                          </>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+
                   <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                     <div className="bg-white align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-start w-44 mt-3 p-0">
@@ -1573,6 +1624,7 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        value={pRate}
                         class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
@@ -1584,6 +1636,7 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        value={pFactor}
                         class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
@@ -2848,14 +2901,14 @@ const Index = () => {
                   </div>
                 </div>
 
-                <div className="  text-start px-2 mb-3">
-                  <div class=" p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
+                <div className=" text-start px-2 mb-3">
+                  <div class="  p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
                     <div className="text-start bg-gray mb-4 m-1">
-                      <div className="shadow border-2   m-0 rounded p-0">
+                      <div className="h-[500px]  shadow border-2   m-0 rounded p-0">
                         <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
                           DIAGNOSTIC TEST
                         </h2>
-                        <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1">
                             <Checkbox id="promotion" />
                             <Label className="italic pr-3" htmlFor="promotion">
@@ -2869,16 +2922,23 @@ const Index = () => {
                               CR
                             </Label>
                           </div>
-
+                        </div>
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1  ">
                             <Checkbox id="promotion" />
                             <Label className="italic" htmlFor="promotion">
                               FMR
                             </Label>
                           </div>
+                          <div className="flex items-center gap-1  ">
+                            <Checkbox id="promotion" />
+                            <Label className="italic" htmlFor="promotion">
+                              SGPT
+                            </Label>
+                          </div>
                         </div>
 
-                        <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1 ">
                             <Checkbox id="promotion" />
                             <Label className="italic" htmlFor="promotion">
@@ -2892,15 +2952,9 @@ const Index = () => {
                               PUR
                             </Label>{" "}
                           </div>
-
-                          <div className="flex items-center gap-1  ">
-                            <Checkbox id="promotion" />
-                            <Label className="italic" htmlFor="promotion">
-                              SGPT
-                            </Label>
-                          </div>
                         </div>
-                        <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1">
                             <Checkbox id="promotion" />
                             <Label className="italic pr-3" htmlFor="promotion">
@@ -2908,6 +2962,31 @@ const Index = () => {
                             </Label>{" "}
                           </div>
 
+                          <div className="flex items-center gap-1">
+                            <Checkbox id="promotion" />
+                            <Label className="italic pr-3" htmlFor="promotion">
+                              PUR
+                            </Label>{" "}
+                          </div>
+                        </div>
+
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                          <div className="flex items-center gap-1  ">
+                            <Checkbox id="promotion" />
+                            <Label className="italic" htmlFor="promotion">
+                              CBC
+                            </Label>
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            <Checkbox id="promotion" />
+                            <Label className="italic pr-3" htmlFor="promotion">
+                              PUR
+                            </Label>{" "}
+                          </div>
+                        </div>
+
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1  ">
                             <Checkbox id="promotion" />
                             <Label className="italic" htmlFor="promotion">
@@ -2922,13 +3001,7 @@ const Index = () => {
                             </Label>
                           </div>
                         </div>
-                        <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
-                          <div className="flex items-center gap-1  ">
-                            <Checkbox id="promotion" />
-                            <Label className="italic" htmlFor="promotion">
-                              CBC
-                            </Label>
-                          </div>
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1 ">
                             <Checkbox id="promotion" />
                             <Label className="italic" htmlFor="promotion">
@@ -2942,13 +3015,7 @@ const Index = () => {
                             </Label>{" "}
                           </div>
                         </div>
-                        <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
-                          <div className="flex items-center gap-1 ">
-                            <Checkbox id="promotion" />
-                            <Label className="italic w-60" htmlFor="promotion">
-                              FBS
-                            </Label>
-                          </div>
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1  ">
                             <Checkbox id="promotion" />
                             <Label className="italic w-60" htmlFor="promotion">
@@ -2962,7 +3029,21 @@ const Index = () => {
                             </Label>
                           </div>
                         </div>
-                        <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                          <div className="flex items-center gap-1 ">
+                            <Checkbox id="promotion" />
+                            <Label className="italic" htmlFor="promotion">
+                              OTHER TEST
+                            </Label>
+                          </div>
+                          <div className="flex items-center gap-1 ">
+                            <Checkbox id="promotion" />
+                            <Label className="italic w-60" htmlFor="promotion">
+                              FBS
+                            </Label>
+                          </div>
+                        </div>
+                        <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                           <div className="flex items-center gap-1 ">
                             <Checkbox id="promotion" />{" "}
                             <Label className="italic" htmlFor="promotion">
@@ -2975,88 +3056,81 @@ const Index = () => {
                               X RAY
                             </Label>
                           </div>
-                          <div className="flex items-center gap-1 ">
-                            <Checkbox id="promotion" />
-                            <Label className="italic" htmlFor="promotion">
-                              OTHER TEST
-                            </Label>
-                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
+                <div class=" p-1 mb-0 flex col-span-2 grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
+                  <div className="text-start bg-gray mb-4 m-1">
+                    <div className="shadow border-2   m-0 rounded p-0">
+                      <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
+                        ONLY FOR WOMEN
+                      </h2>
+                      <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                        <div className="text-start flex px-1">
+                          <label className="text-center mt-2  text-sm  w-48">
+                            Pregnant Info
+                          </label>
+                          <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                            <>
+                              <option>Yes</option>
+                              <option>No</option>
+                            </>
+                          </select>
+                        </div>
+                        <div className="text-start flex px-1 mt-2">
+                          <label className="text-center mt-2  text-sm  w-48">
+                            Delivery Process
+                          </label>
+                          <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                            <>
+                              <option>Yes</option>
+                              <option>No</option>
+                            </>
+                          </select>
+                        </div>
+                        <div className="text-start flex px-1 mt-2">
+                          <label className="text-center mt-2  text-sm  w-48">
+                            Female Diaseas
+                          </label>
+                          <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                            <>
+                              <option>Yes</option>
+                              <option>No</option>
+                            </>
+                          </select>
+                        </div>
 
-                  <div class=" p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
-                    <div className="text-start bg-gray mb-4 m-1">
-                      <div className="shadow border-2   m-0 rounded p-0">
-                        <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
-                          ONLY FOR WOMEN
-                        </h2>
-                        <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
-                          <div className="text-start flex px-1">
-                            <label className="text-center mt-2  text-sm  w-48">
-                              Pregnant Info
-                            </label>
-                            <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                              <>
-                                <option>Yes</option>
-                                <option>No</option>
-                              </>
-                            </select>
-                          </div>
-                          <div className="text-start flex px-1 mt-2">
-                            <label className="text-center mt-2  text-sm  w-48">
-                              Delivery Process
-                            </label>
-                            <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                              <>
-                                <option>Yes</option>
-                                <option>No</option>
-                              </>
-                            </select>
-                          </div>
-                          <div className="text-start flex px-1 mt-2">
-                            <label className="text-center mt-2  text-sm  w-48">
-                              Female Diaseas
-                            </label>
-                            <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                              <>
-                                <option>Yes</option>
-                                <option>No</option>
-                              </>
-                            </select>
-                          </div>
-
-                          <div className="bg-white  flex align-items-center m-1  lg:mt-0">
-                            <label className="w-48 mt-4 text-sm">
-                              Exp Delivery Date
-                            </label>
-                            <input
-                              type="date"
-                              id="success"
-                              class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                            />
-                          </div>
-                          <div className="bg-white  flex align-items-center m-1  lg:mt-0">
-                            <label className="w-48 mt-4 text-sm">
-                              Last Delivery Date
-                            </label>
-                            <input
-                              type="date"
-                              id="success"
-                              class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                            />
-                          </div>
-                          <div className="bg-white  flex align-items-center m-1  lg:mt-0">
-                            <label className="w-48 mt-4 text-sm">
-                              Last Menstrual Date
-                            </label>
-                            <input
-                              type="text"
-                              id="success"
-                              class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                            />
-                          </div>
+                        <div className="bg-white  flex align-items-center m-1  lg:mt-0">
+                          <label className="w-48 mt-4 text-sm">
+                            Exp Delivery Date
+                          </label>
+                          <input
+                            type="date"
+                            id="success"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          />
+                        </div>
+                        <div className="bg-white  flex align-items-center m-1  lg:mt-0">
+                          <label className="w-48 mt-4 text-sm">
+                            Last Delivery Date
+                          </label>
+                          <input
+                            type="date"
+                            id="success"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          />
+                        </div>
+                        <div className="bg-white  flex align-items-center m-1  lg:mt-0">
+                          <label className="w-48 mt-4 text-sm">
+                            Last Menstrual Date
+                          </label>
+                          <input
+                            type="text"
+                            id="success"
+                            class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          />
                         </div>
                       </div>
                     </div>
@@ -3064,7 +3138,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className="text-start col-span-2  px-2">
+            <div className="text-start col-span-2  px-2 lg:mt-2">
               <div className="shadow border-2 h-100 rounded p-1 mt-2 mb-3">
                 <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
                   ARMED FORCE INFORMATION
@@ -3206,11 +3280,12 @@ const Index = () => {
                   </div>
                 </div>
               </div>
+
               <div className="shadow border-2 h-100 rounded p-1 mt-2 mb-3">
                 <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
                   BANK INFORMATION
                 </h2>
-                <div class="p-1 mb-2 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="bg-white flex align-items-center m-1  lg:mt-0">
                     <label className="text-center mt-3  text-sm  w-36">
                       Account No
@@ -3244,6 +3319,129 @@ const Index = () => {
                         <option>Midland bank</option>
                       </>
                     </select>
+                  </div>
+                </div>
+              </div>
+              {/* previous policy entry */}
+              <div className="shadow border-2 h-100 rounded p-1 mt-2 mb-3">
+                <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
+                  PREVIOUS POLICY NO
+                </h2>
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start flex px-2">
+                    <label className="text-center mt-3  text-sm  w-20">
+                      Policy 1
+                    </label>
+                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                      <>
+                        <option>Islami bank</option>
+                        <option>Midland bank</option>
+                      </>
+                    </select>
+                  </div>
+                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                </div>
+
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start flex px-2">
+                    <label className="text-center mt-3  text-sm  w-20">
+                      Policy 2
+                    </label>
+                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                      <>
+                        <option>Islami bank</option>
+                        <option>Midland bank</option>
+                      </>
+                    </select>
+                  </div>
+                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                </div>
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start flex px-2">
+                    <label className="text-center mt-3  text-sm  w-20">
+                      Policy 3
+                    </label>
+                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                      <>
+                        <option>Islami bank</option>
+                        <option>Midland bank</option>
+                      </>
+                    </select>
+                  </div>
+                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                </div>
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start flex px-2">
+                    <label className="text-center mt-3  text-sm  w-20">
+                      Policy 4
+                    </label>
+                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                      <>
+                        <option>Islami bank</option>
+                        <option>Midland bank</option>
+                      </>
+                    </select>
+                  </div>
+                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                </div>
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start flex px-2">
+                    <label className="text-center mt-3  text-sm  w-20">
+                      Policy 5
+                    </label>
+                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                      <>
+                        <option>Islami bank</option>
+                        <option>Midland bank</option>
+                      </>
+                    </select>
+                  </div>
+                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
+                    />
+                  </div>
+                </div>
+
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-end">
+                    <label className="text-center font-bold  mt-3  text-sm  w-20">
+                      Total:
+                    </label>
+                  </div>
+
+                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                    <input
+                      type="text"
+                      id="success"
+                      class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
+                    />
                   </div>
                 </div>
               </div>

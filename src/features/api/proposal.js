@@ -8,6 +8,14 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
+
+    getPremiumList: builder.query({
+      query: () => ({
+        url: "/all-premium",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+
     getPlanlist: builder.query({
       query: () => ({
         url: "/all-plan",
@@ -95,6 +103,7 @@ const proposal = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetPremiumListQuery,
   useGetModelistQuery,
   useGetPlanlistQuery,
   useCreateProposalEntryMutation,
