@@ -9,6 +9,13 @@ const proposal = apiSlice.injectEndpoints({
       providesTags: ["proposal_head"],
     }),
 
+    getBankList: builder.query({
+      query: () => ({
+        url: "/all-bank",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+
     getPremiumList: builder.query({
       query: () => ({
         url: "/all-premium",
@@ -79,6 +86,7 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
+
     getThanalist: builder.query({
       query: (DIV_CODE) => ({
         url: `/thana-list/${DIV_CODE}`,
@@ -91,6 +99,13 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
+    getBankbranchlist: builder.query({
+      query: (BANK_CODE) => ({
+        url: `/branch-list/${BANK_CODE}`,
+      }),
+      providesTags: ["proposal_head"],
+    }),
+
     createProposalEntry: builder.mutation({
       query: (data) => ({
         url: `/proposal-entry`,
@@ -103,6 +118,8 @@ const proposal = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetBankbranchlistQuery,
+  useGetBankListQuery,
   useGetPremiumListQuery,
   useGetModelistQuery,
   useGetPlanlistQuery,

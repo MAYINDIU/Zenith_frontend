@@ -3,6 +3,8 @@ import Navbar from "../../Nabar/Navbar";
 import { Checkbox, Label, Radio, Table } from "flowbite-react";
 import {
   useGetAgentlistQuery,
+  useGetBankListQuery,
+  useGetBankbranchlistQuery,
   useGetBranchlistQuery,
   useGetCountrylistQuery,
   useGetDistrictlisttQuery,
@@ -63,7 +65,21 @@ const Index = () => {
   const [selectTerm, setTerm] = useState();
   const [calcuType, setCalcuType] = useState();
   const [rate, setRate] = useState();
-  console.log(rate);
+  const [bankCode, setBankCode] = useState();
+  const [minAge, setMinage] = useState();
+  const [maxAge, setMaxAge] = useState();
+  const [minTerm, setMinterm] = useState();
+  const [maxTerm, setMaxterm] = useState();
+
+  console.log(
+    "minAge" + minAge,
+    "maxAge" + maxAge,
+    "minTerm" + minTerm,
+    "maxTerm" + maxTerm
+  );
+
+  // console.log(bankCode);
+  // console.log(rate);
   // console.log(selectTerm, pmode);
   // console.log(calcuType);
 
@@ -72,7 +88,22 @@ const Index = () => {
   const calcuAge = calAge?.age[0];
   const pRate = rate?.[0];
   const pFactor = rate?.[1];
-  console.log(pRate, pFactor);
+  // console.log(pRate, pFactor);
+
+  useEffect(() => {
+    // Check if minAge is greater than maxAge
+    if (calcuAge < minAge) {
+      alert(`This plan does not support age below ${minAge}`);
+      setPlan("");
+    }
+    // Check if calcuAge is greater than maxAge
+    else if (calcuAge > maxAge) {
+      alert(`This plan does not support age above ${maxAge}`);
+      setPlan("");
+    }
+
+    // Add similar checks for minTerm and maxTerm if needed
+  }, [minAge, maxAge, calcuAge]);
 
   const UserD = JSON.parse(localStorage.getItem("UserDetails"));
   const USER_ID = UserD?.PERSONALID;
@@ -106,6 +137,10 @@ const Index = () => {
     // ... other logic
   };
 
+  const handleBankCode = (e) => {
+    setBankCode(e.target.value);
+  };
+
   const handleterm = (e) => {
     setTerm(e.target.value);
   };
@@ -118,9 +153,15 @@ const Index = () => {
   };
   const handlePlan = (e) => {
     const value = e.target.value;
-    const [planId, calcuType] = value.split("-");
+
+    const [planId, calcuType, min_age, max_age, min_term, max_term] =
+      value.split("-");
     setPlan(planId);
     setCalcuType(calcuType);
+    setMinage(min_age);
+    setMaxAge(max_age);
+    setMinterm(min_term);
+    setMaxterm(max_term);
   };
   const handleCountry = (e) => {
     setCountry(e.target.value);
@@ -413,7 +454,8 @@ const Index = () => {
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
   const { data: agentList } = useGetAgentlistQuery(projectId);
   const { data: modeList } = useGetModelistQuery(planName);
-
+  const { data: bankList } = useGetBankListQuery();
+  const { data: bankbranchList } = useGetBankbranchlistQuery(bankCode);
   const { data: districtList } = useGetDistrictlisttQuery();
   const { data: birthPlaceList } = useGetDistrictlisttQuery();
   const { data: genderList } = useGetGenderQuery();
@@ -1495,7 +1537,7 @@ const Index = () => {
                         {planList?.map((plan, i) => (
                           <option
                             key={i}
-                            value={`${plan?.plan_id}-${plan?.calcu_type}`}
+                            value={`${plan?.plan_id}-${plan?.calcu_type}-${plan?.min_age}-${plan?.max_age}-${plan?.min_term}-${plan?.max_term}`}
                           >
                             {plan?.plan_id}-{plan?.plan_name}
                           </option>
@@ -1595,7 +1637,7 @@ const Index = () => {
                             <option>Select Premium</option>
 
                             {premiumList?.map((prem, i) => (
-                              <option key={i} value={prem?.premium}>
+                              <option key={i} value={prem?.prem_amt}>
                                 Premium Tk-{prem?.premium}
                               </option>
                             ))}
@@ -3285,9 +3327,9 @@ const Index = () => {
                 <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
                   BANK INFORMATION
                 </h2>
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                    <label className="text-center mt-3  text-sm  w-36">
+                    <label className="text-center mt-3  text-sm  w-32">
                       Account No
                     </label>
                     <input
@@ -3296,28 +3338,33 @@ const Index = () => {
                       class="form-input text-sm p-2 shadow border-[#E3F2FD] mt-1 w-full"
                     />
                   </div>
+                </div>
+                <div class="p-1 mb-2 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="text-start flex px-2">
                     <label className="text-center mt-3  text-sm  w-20">
                       BANK
                     </label>
-                    <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                      <>
-                        <option>Islami bank</option>
-                        <option>Midland bank</option>
-                      </>
+                    <select
+                      onChange={handleBankCode}
+                      className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                    >
+                      {bankList?.map((bank, i) => (
+                        <option key={i} value={bank?.bank_code}>
+                          {bank?.bank_name}
+                        </option>
+                      ))}
                     </select>
                   </div>
-                </div>
-                <div class="p-1 mb-2 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="text-start flex px-2">
-                    <label className="text-center mt-3  text-sm  w-32">
+                    <label className="text-center mt-3  text-sm  w-48">
                       BANK BRANCH
                     </label>
                     <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                      <>
-                        <option>Islami bank</option>
-                        <option>Midland bank</option>
-                      </>
+                      {bankbranchList?.map((branch, i) => (
+                        <option key={i} value={branch?.branch_name}>
+                          {branch?.branch_name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
