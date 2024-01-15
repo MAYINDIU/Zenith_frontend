@@ -17,6 +17,8 @@ import {
   useGetPostofficelistQuery,
   useGetPremiumListQuery,
   useGetProjectlistQuery,
+  useGetSupplimentClassListQuery,
+  useGetSupplimentListQuery,
   useGetThanalistQuery,
 } from "../../../features/api/proposal";
 import axios from "axios";
@@ -70,6 +72,16 @@ const Index = () => {
   const [maxAge, setMaxAge] = useState();
   const [minTerm, setMinterm] = useState();
   const [maxTerm, setMaxterm] = useState();
+  const [maxSumInsure, setMaxSumInsure] = useState();
+  const [minSumInsure, setMinSumInsure] = useState();
+
+  const [supplimentId, setSuppli] = useState();
+  const [supplimentClass, setSuppliClass] = useState();
+  const [sumAssured, setSumassured] = useState();
+  const [suppPremium, setSuppPrem] = useState([]);
+
+  const [birth_dateE, setBirthDateE] = useState();
+  console.log(maxSumInsure, minSumInsure);
 
   console.log(
     "minAge" + minAge,
@@ -86,6 +98,7 @@ const Index = () => {
   const totalInstallment = t_installment?.total_install[0];
   // console.log(totalInstallment);
   const calcuAge = calAge?.age[0];
+  const sPrem = suppPremium[0]?.premium;
   const pRate = rate?.[0];
   const pFactor = rate?.[1];
   // console.log(pRate, pFactor);
@@ -101,9 +114,15 @@ const Index = () => {
       alert(`This plan does not support age above ${maxAge}`);
       setPlan("");
     }
-
-    // Add similar checks for minTerm and maxTerm if needed
   }, [minAge, maxAge, calcuAge]);
+
+  // useEffect(() => {
+  //   if (sumAssured < minSumInsure) {
+  //     alert(`This plan does not support sum issure below ${minSumInsure}`);
+  //   } else if (sumAssured > maxSumInsure) {
+  //     alert(`This plan does not support sum issure above ${maxSumInsure}`);
+  //   }
+  // }, [sumAssured, minSumInsure, maxSumInsure]);
 
   const UserD = JSON.parse(localStorage.getItem("UserDetails"));
   const USER_ID = UserD?.PERSONALID;
@@ -127,7 +146,7 @@ const Index = () => {
   // console.log(comm_datee);
 
   const dob = formatAsMMDDYYYY(birth_date);
-  // console.log(dob);
+  console.log(dob);
   // console.log(formatAsMMDDYYYY(commencementDate?.comm_date[0]));
   // console.log(formatAsMMDDYYYY(proposal_date));
 
@@ -137,6 +156,17 @@ const Index = () => {
     // ... other logic
   };
 
+  const handleSumAssured = (e) => {
+    setSumassured(e.target.value);
+  };
+
+  const handleSupply = (e) => {
+    setSuppli(e.target.value);
+  };
+
+  const handleSuppliClass = (e) => {
+    setSuppliClass(e.target.value);
+  };
   const handleBankCode = (e) => {
     setBankCode(e.target.value);
   };
@@ -154,14 +184,24 @@ const Index = () => {
   const handlePlan = (e) => {
     const value = e.target.value;
 
-    const [planId, calcuType, min_age, max_age, min_term, max_term] =
-      value.split("-");
+    const [
+      planId,
+      calcuType,
+      min_age,
+      max_age,
+      min_term,
+      max_term,
+      min_suminsured,
+      max_suminsured,
+    ] = value.split("-");
     setPlan(planId);
     setCalcuType(calcuType);
     setMinage(min_age);
     setMaxAge(max_age);
     setMinterm(min_term);
     setMaxterm(max_term);
+    setMaxSumInsure(max_suminsured);
+    setMinSumInsure(min_suminsured);
   };
   const handleCountry = (e) => {
     setCountry(e.target.value);
@@ -192,7 +232,7 @@ const Index = () => {
 
   useEffect(() => {
     if (proposalInfo[0]?.dob) {
-      setBirthDate(formatAsMMDDYYYY(proposalInfo[0]?.dob));
+      setBirthDateE(formatAsMMDDYYYY(proposalInfo[0]?.dob));
     }
   }, [proposalInfo]);
 
@@ -385,10 +425,11 @@ const Index = () => {
   // get age
   useEffect(() => {
     const fetchData = async () => {
+      const abc = `http://localhost:5000/api/get-age/${comm_datee}/${
+        birth_dateE ? birth_dateE : dob
+      }`;
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/get-age/${comm_datee}/${dob}`
-        );
+        const response = await axios.get(abc);
         setCalage(response?.data);
       } catch (error) {
       } finally {
@@ -396,7 +437,7 @@ const Index = () => {
     };
 
     fetchData();
-  }, [comm_datee, dob]);
+  }, [comm_datee, birth_dateE, dob]);
   // get age
 
   // get term-list
@@ -450,6 +491,23 @@ const Index = () => {
   }, [comm_datee, policytype]);
   // get commencement date
 
+  // get suppliment premium
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/suppliment-premium/${planName}/${occupation}/${supplimentId}/${supplimentClass}/${sumAssured}/${pmode}`
+        );
+        setSuppPrem(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [planName, occupation, supplimentId, supplimentClass, sumAssured, pmode]);
+  //get suppliment premium
+
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
   const { data: agentList } = useGetAgentlistQuery(projectId);
@@ -465,8 +523,8 @@ const Index = () => {
   const { data: educationList } = useGetEducationListQuery();
   const { data: planList } = useGetPlanlistQuery();
   const { data: premiumList } = useGetPremiumListQuery();
-
-  // console.log(genderList);
+  const { data: SupplementaryList } = useGetSupplimentClassListQuery();
+  const { data: SupplementList } = useGetSupplimentListQuery();
 
   const { data: thanaList } = useGetThanalistQuery(
     district ? district : pdistrict
@@ -627,31 +685,31 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <Radio
                   onChange={(e) => setPolicyType(e.target.value)}
-                  id="uk"
+                  id="cp"
                   name="countries"
                   value="1"
                   // Check the radio button if policyType is '1'
                 />
-                <Label htmlFor="uk">CURRENT POLICY</Label>
+                <Label htmlFor="cp">CURRENT POLICY</Label>
               </div>
 
               <div className="flex items-center gap-2">
                 <Radio
                   onChange={(e) => setPolicyType(e.target.value)}
-                  id="uk"
+                  id="tp"
                   name="countries"
                   value="10"
                 />
-                <Label htmlFor="uk">TP POLICY</Label>
+                <Label htmlFor="tp">TP POLICY</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Radio
                   onChange={(e) => setPolicyType(e.target.value)}
-                  id="uk"
+                  id="bp"
                   name="countries"
                   value="13"
                 />
-                <Label htmlFor="uk">BACK DATE POLICY</Label>
+                <Label htmlFor="bp">BACK DATE POLICY</Label>
               </div>
             </div>
 
@@ -1297,11 +1355,11 @@ const Index = () => {
                         <label className="w-36 mt-4 font-bold text-xs">
                           DATE OF BIRTH
                         </label>
-                        {birth_date ? (
+                        {birth_dateE ? (
                           <input
                             type="text"
                             id="success"
-                            value={birth_date}
+                            value={birth_dateE}
                             class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                             onChange={handleBirthDateChange}
                           />
@@ -1402,10 +1460,7 @@ const Index = () => {
                             className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
                           >
                             {occupationList?.map((occupation, i) => (
-                              <option
-                                key={i}
-                                value={occupation?.occupation_name}
-                              >
+                              <option key={i} value={occupation?.occupation_ID}>
                                 {occupation?.occupation_name}
                               </option>
                             ))}
@@ -1537,7 +1592,7 @@ const Index = () => {
                         {planList?.map((plan, i) => (
                           <option
                             key={i}
-                            value={`${plan?.plan_id}-${plan?.calcu_type}-${plan?.min_age}-${plan?.max_age}-${plan?.min_term}-${plan?.max_term}`}
+                            value={`${plan?.plan_id}-${plan?.calcu_type}-${plan?.min_age}-${plan?.max_age}-${plan?.min_term}-${plan?.max_term}-${plan?.min_suminsured}-${plan?.max_suminsured}`}
                           >
                             {plan?.plan_id}-{plan?.plan_name}
                           </option>
@@ -1653,6 +1708,7 @@ const Index = () => {
                         SUM ASSURED
                       </label>
                       <input
+                        onChange={handleSumAssured}
                         type="text"
                         id="success"
                         class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
@@ -1723,15 +1779,40 @@ const Index = () => {
                           </Label>
                         </div>
                       </div>
-                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                        <label className="text-xs text-start w-16 mt-3 p-0">
+                      <div className="flex bg-white align-items-center m-1  lg:mt-0">
+                        <label className="w-16 text-start mt-3 text-xs">
+                          SUPPL.
+                        </label>
+                        <select
+                          onChange={handleSupply}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        >
+                          <>
+                            {SupplementList?.map((suppl, i) => (
+                              <option key={i} value={suppl?.supp_code}>
+                                {suppl?.supp_name}
+                              </option>
+                            ))}
+                          </>
+                        </select>
+                      </div>
+
+                      <div className="flex bg-white align-items-center m-1  lg:mt-1">
+                        <label className="w-16 text-start mt-3 text-xs">
                           CLASS
                         </label>
-                        <input
-                          type="text"
-                          id="success"
-                          class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
-                        />
+                        <select
+                          onChange={handleSuppliClass}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        >
+                          <>
+                            {SupplementaryList?.map((supp, i) => (
+                              <option key={i} value={supp?.class_id}>
+                                {supp?.class_name}
+                              </option>
+                            ))}
+                          </>
+                        </select>
                       </div>
 
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
@@ -1744,22 +1825,14 @@ const Index = () => {
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
-                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                        <label className="text-xs text-start w-16 mt-3 p-0">
-                          FACTOR
-                        </label>
-                        <input
-                          type="text"
-                          id="success"
-                          class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
-                        />
-                      </div>
+
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
                         <label className="text-xs text-start w-16 mt-3 p-0">
                           PREMIUM
                         </label>
                         <input
                           type="text"
+                          value={sPrem}
                           id="success"
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
@@ -3190,11 +3263,12 @@ const Index = () => {
                     <label className="text-xs text-center w-48 mt-3 p-0">
                       ARMED FORCE DESG
                     </label>
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
-                    />
+                    <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
+                      <>
+                        <option>Yes</option>
+                        <option>No</option>
+                      </>
+                    </select>
                   </div>
                   <div className="text-start flex px-2">
                     <label className="text-center mt-2  text-sm  w-60">

@@ -9,6 +9,19 @@ const proposal = apiSlice.injectEndpoints({
       providesTags: ["proposal_head"],
     }),
 
+    getSupplimentClassList: builder.query({
+      query: () => ({
+        url: "/suppli-class",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+    getSupplimentList: builder.query({
+      query: () => ({
+        url: "/suppliment-list",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+
     getBankList: builder.query({
       query: () => ({
         url: "/all-bank",
@@ -106,6 +119,20 @@ const proposal = apiSlice.injectEndpoints({
       providesTags: ["proposal_head"],
     }),
 
+    getSuppliPremium: builder.query({
+      query: (
+        table_id,
+        occup_id,
+        supp_type,
+        supp_class,
+        sum_assured,
+        pay_mode
+      ) => ({
+        url: `/suppliment-premium/${table_id}/${occup_id},${supp_type},${supp_class},${sum_assured},${pay_mode}`,
+      }),
+      providesTags: ["proposal_head"],
+    }),
+
     createProposalEntry: builder.mutation({
       query: (data) => ({
         url: `/proposal-entry`,
@@ -118,6 +145,9 @@ const proposal = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetSuppliPremiumQuery,
+  useGetSupplimentListQuery,
+  useGetSupplimentClassListQuery,
   useGetBankbranchlistQuery,
   useGetBankListQuery,
   useGetPremiumListQuery,
