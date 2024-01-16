@@ -81,6 +81,7 @@ const Index = () => {
   const [suppPremium, setSuppPrem] = useState([]);
   const [basicPremium, setBasicPrem] = useState([]);
   const [sumAtrisk, setSumAtRisk] = useState([]);
+  const [premPlanlist, setPremPlanlist] = useState([]);
   const [birth_dateE, setBirthDateE] = useState();
   console.log(sumAtrisk);
 
@@ -547,6 +548,24 @@ const Index = () => {
     fetchData();
   }, [planName, sumAssured, basicPrem, pFactor, pmode]);
   // get sum at risk
+
+  // get prem plan list
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/prem-plan-list/${sumAssured}
+            `
+        );
+        setPremPlanlist(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [sumAssured]);
+  //  get prem plan list
 
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
@@ -2026,19 +2045,22 @@ const Index = () => {
                   </div>
                   <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
                     <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                      <label className="text-xs text-start w-56 mt-3 p-0">
+                      <label className="w-24 text-start mt-3 text-xs">
                         PLAN PREM
                       </label>
-                      <input
-                        type="text"
-                        id="success"
-                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
-                      />
-                      <input
-                        type="text"
-                        id="success"
-                        class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
-                      />
+                      <select
+                        // onChange={handleSuppliClass}
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                      >
+                        <>
+                          <option>SELECT PLAN PREM</option>
+                          {premPlanlist?.map((planList, i) => (
+                            <option key={i} value={planList?.plan_no}>
+                              {planList?.plan_name}
+                            </option>
+                          ))}
+                        </>
+                      </select>
                     </div>
 
                     <div className="bg-white flex align-items-center m-1  lg:mt-0">
