@@ -79,9 +79,10 @@ const Index = () => {
   const [supplimentClass, setSuppliClass] = useState();
   const [sumAssured, setSumassured] = useState();
   const [suppPremium, setSuppPrem] = useState([]);
-
+  const [basicPremium, setBasicPrem] = useState([]);
+  const [sumAtrisk, setSumAtRisk] = useState([]);
   const [birth_dateE, setBirthDateE] = useState();
-  console.log(maxSumInsure, minSumInsure);
+  console.log(sumAtrisk);
 
   console.log(
     "minAge" + minAge,
@@ -99,22 +100,26 @@ const Index = () => {
   // console.log(totalInstallment);
   const calcuAge = calAge?.age[0];
   const sPrem = suppPremium[0]?.premium;
-  const pRate = rate?.[0];
-  const pFactor = rate?.[1];
+  const basicPrem = basicPremium[0]?.basic_premium;
+  const sumAtRisk = sumAtrisk[0]?.sum_at_risk;
+
+  const pRate = rate?.[0].toFixed(2);
+  const pFactor = rate?.[1].toFixed(2);
+
   // console.log(pRate, pFactor);
 
-  useEffect(() => {
-    // Check if minAge is greater than maxAge
-    if (calcuAge < minAge) {
-      alert(`This plan does not support age below ${minAge}`);
-      setPlan("");
-    }
-    // Check if calcuAge is greater than maxAge
-    else if (calcuAge > maxAge) {
-      alert(`This plan does not support age above ${maxAge}`);
-      setPlan("");
-    }
-  }, [minAge, maxAge, calcuAge]);
+  // useEffect(() => {
+  //   // Check if minAge is greater than maxAge
+  //   if (calcuAge < minAge) {
+  //     alert(`This plan does not support age below ${minAge}`);
+  //     setPlan("");
+  //   }
+  //   // Check if calcuAge is greater than maxAge
+  //   else if (calcuAge > maxAge) {
+  //     alert(`This plan does not support age above ${maxAge}`);
+  //     setPlan("");
+  //   }
+  // }, [minAge, maxAge, calcuAge]);
 
   // useEffect(() => {
   //   if (sumAssured < minSumInsure) {
@@ -146,7 +151,7 @@ const Index = () => {
   // console.log(comm_datee);
 
   const dob = formatAsMMDDYYYY(birth_date);
-  console.log(dob);
+  // console.log(dob);
   // console.log(formatAsMMDDYYYY(commencementDate?.comm_date[0]));
   // console.log(formatAsMMDDYYYY(proposal_date));
 
@@ -508,6 +513,41 @@ const Index = () => {
   }, [planName, occupation, supplimentId, supplimentClass, sumAssured, pmode]);
   //get suppliment premium
 
+  // get basic premium
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/basic-premium/${planName}/${selectTerm}/${calcuAge}/${pmode}/${sumAssured}/'A' `
+        );
+        setBasicPrem(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [planName, selectTerm, calcuAge, pmode, sumAssured]);
+  //get basic premium
+
+  // get sum at risk
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/sumat-risk/${planName}/${sumAssured}/${basicPrem}/${pFactor}/${pmode}
+          `
+        );
+        setSumAtRisk(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [planName, sumAssured, basicPrem, pFactor, pmode]);
+  // get sum at risk
+
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
   const { data: agentList } = useGetAgentlistQuery(projectId);
@@ -521,7 +561,7 @@ const Index = () => {
   const { data: countryList } = useGetCountrylistQuery();
   const { data: occupationList } = useGetOccupationlistQuery();
   const { data: educationList } = useGetEducationListQuery();
-  const { data: planList } = useGetPlanlistQuery();
+  const { data: planList } = useGetPlanlistQuery(calcuAge);
   const { data: premiumList } = useGetPremiumListQuery();
   const { data: SupplementaryList } = useGetSupplimentClassListQuery();
   const { data: SupplementList } = useGetSupplimentListQuery();
@@ -1581,25 +1621,39 @@ const Index = () => {
                 </h2>
 
                 <div class="p-0 mb-0 flex grid grid-cols-1 rounded  mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="text-start px-2">
-                    <label className="text-start text-xs">PLAN LIST</label>
-                    <select
-                      onChange={handlePlan}
-                      className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    >
-                      <>
-                        <option>Select Plan</option>
-                        {planList?.map((plan, i) => (
-                          <option
-                            key={i}
-                            value={`${plan?.plan_id}-${plan?.calcu_type}-${plan?.min_age}-${plan?.max_age}-${plan?.min_term}-${plan?.max_term}-${plan?.min_suminsured}-${plan?.max_suminsured}`}
-                          >
-                            {plan?.plan_id}-{plan?.plan_name}
-                          </option>
-                        ))}
-                      </>
-                    </select>
-                  </div>
+                  {proposalInfo[0]?.plan_desc ? (
+                    <div className="text-start px-2">
+                      <label className="text-start text-xs">Plan Name</label>
+                      <input
+                        type="text"
+                        id="success"
+                        value={proposalInfo[0]?.plan_desc}
+                        disabled
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        onChange={handlePlan}
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-start px-2">
+                      <label className="text-start text-xs">PLAN LIST</label>
+                      <select
+                        onChange={handlePlan}
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                      >
+                        <>
+                          <option>Select Plan</option>
+                          {planList?.map((plan, i) => (
+                            <option
+                              key={i}
+                              value={`${plan?.plan_id}-${plan?.calcu_type}-${plan?.min_age}-${plan?.max_age}-${plan?.min_term}-${plan?.max_term}-${plan?.min_suminsured}-${plan?.max_suminsured}`}
+                            >
+                              {plan?.plan_id}-{plan?.plan_name}
+                            </option>
+                          ))}
+                        </>
+                      </select>
+                    </div>
+                  )}
                 </div>
 
                 <div class="p-1 mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
@@ -1617,51 +1671,96 @@ const Index = () => {
                     />
                   </div>
                   <div className="col-span-2 bg-white align-items-center m-1  lg:mt-0">
-                    <label className="text-start text-xs">TERM OF POLICY</label>
-                    <select
-                      onChange={handleterm}
-                      className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    >
-                      <>
-                        <option>Select Term</option>
-                        {termList?.map((termm, i) => (
-                          <option key={i} value={termm?.term}>
-                            {termm?.term}
-                          </option>
-                        ))}
-                      </>
-                    </select>
+                    {proposalInfo[0]?.term ? (
+                      <div className="text-start px-2">
+                        <label className="text-start text-xs">
+                          {" "}
+                          TERM OF POLICY
+                        </label>
+                        <input
+                          type="text"
+                          id="success"
+                          value={proposalInfo[0]?.term}
+                          disabled
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                          onChange={handlePlan}
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="text-start text-xs">
+                          TERM OF POLICY
+                        </label>
+                        <select
+                          onChange={handleterm}
+                          className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        >
+                          <>
+                            <option>Select Term</option>
+                            {termList?.map((termm, i) => (
+                              <option key={i} value={termm?.term}>
+                                {termm?.term}
+                              </option>
+                            ))}
+                          </>
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className=" bg-white align-items-center m-1  lg:mt-0">
-                    <label className="text-start text-xs">PAYMENT MODE</label>
-                    <select
-                      onChange={handlePaymode}
-                      className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    >
-                      <>
-                        <option>Select Mode</option>
-                        {modeList?.map((mode, i) => (
-                          <option key={i} value={mode?.mode_code}>
-                            {mode?.mode_code}-{mode?.mode_name}
-                          </option>
-                        ))}
-                      </>
-                    </select>
-                  </div>
+                  {proposalInfo[0]?.instmode ? (
+                    <div className="text-start px-2">
+                      <label className="text-start text-xs">PAYMENT MODE</label>
+                      <input
+                        type="text"
+                        id="success"
+                        value={proposalInfo[0]?.instmode}
+                        disabled
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        onChange={handlePaymode}
+                      />
+                    </div>
+                  ) : (
+                    <div className=" bg-white align-items-center m-1  lg:mt-0">
+                      <label className="text-start text-xs">PAYMENT MODE</label>
+                      <select
+                        onChange={handlePaymode}
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                      >
+                        <>
+                          <option>Select Mode</option>
+                          {modeList?.map((mode, i) => (
+                            <option key={i} value={mode?.mode_code}>
+                              {mode?.mode_code}-{mode?.mode_name}
+                            </option>
+                          ))}
+                        </>
+                      </select>
+                    </div>
+                  )}
                 </div>
                 <div class="p-1 mb-8 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="col-span-2 bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">
                       TOTAL INSTALLMENT
                     </label>
-                    <input
-                      type="text"
-                      id="success"
-                      value={totalInstallment}
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                    />
+                    {proposalInfo[0]?.totalinst ? (
+                      <input
+                        type="text"
+                        id="success"
+                        value={proposalInfo[0]?.totalinst}
+                        disabled
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        id="success"
+                        value={totalInstallment}
+                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    )}
                   </div>
                   <div className="w-full lg:w-full bg-white align-items-center m-1  lg:mt-0">
                     <label className="text-start text-xs">AGE ADMITTED</label>
@@ -1707,12 +1806,23 @@ const Index = () => {
                       <label className="text-xs text-start w-44 mt-3 p-0">
                         SUM ASSURED
                       </label>
-                      <input
-                        onChange={handleSumAssured}
-                        type="text"
-                        id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                      />
+                      {proposalInfo[0]?.sum_insure ? (
+                        <input
+                          onChange={handleSumAssured}
+                          type="text"
+                          id="success"
+                          value={proposalInfo[0]?.sum_insure}
+                          disabled
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      ) : (
+                        <input
+                          onChange={handleSumAssured}
+                          type="text"
+                          id="success"
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      )}
                     </div>
 
                     <div className="bg-white  align-items-center m-1  lg:mt-0">
@@ -1744,22 +1854,44 @@ const Index = () => {
                       <label className="text-xs text-start w-40 mt-3 p-0">
                         BASIC PREMIUM
                       </label>
-                      <input
-                        type="text"
-                        id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                      />
+                      {proposalInfo[0]?.premium ? (
+                        <input
+                          type="text"
+                          id="success"
+                          value={proposalInfo[0]?.premium}
+                          disabled
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          id="success"
+                          value={basicPrem}
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      )}
                     </div>
 
                     <div className="bg-white  align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-center w-36 mt-3 p-0">
                         SUM AT RISK
                       </label>
-                      <input
-                        type="text"
-                        id="success"
-                        class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                      />
+                      {proposalInfo[0]?.sumatrisk ? (
+                        <input
+                          type="text"
+                          id="success"
+                          value={proposalInfo[0]?.sumatrisk}
+                          disabled
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          id="success"
+                          value={sumAtRisk}
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1788,6 +1920,7 @@ const Index = () => {
                           className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
                         >
                           <>
+                            <option>Select Suppli.</option>
                             {SupplementList?.map((suppl, i) => (
                               <option key={i} value={suppl?.supp_code}>
                                 {suppl?.supp_name}
@@ -1806,6 +1939,7 @@ const Index = () => {
                           className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
                         >
                           <>
+                            <option>Select Suppli. Class</option>
                             {SupplementaryList?.map((supp, i) => (
                               <option key={i} value={supp?.class_id}>
                                 {supp?.class_name}

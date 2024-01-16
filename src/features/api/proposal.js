@@ -37,8 +37,8 @@ const proposal = apiSlice.injectEndpoints({
     }),
 
     getPlanlist: builder.query({
-      query: () => ({
-        url: "/all-plan",
+      query: (age) => ({
+        url: `/all-plan/${age}`,
       }),
       providesTags: ["proposal_head"],
     }),
