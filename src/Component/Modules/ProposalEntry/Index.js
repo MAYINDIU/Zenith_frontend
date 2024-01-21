@@ -82,9 +82,12 @@ const Index = () => {
   const [basicPremium, setBasicPrem] = useState([]);
   const [sumAtrisk, setSumAtRisk] = useState([]);
   const [premPlanlist, setPremPlanlist] = useState([]);
-  const [birth_dateE, setBirthDateE] = useState();
-  console.log(sumAtrisk);
+  const [endAtDate, setEndatDate] = useState([]);
+  const [ipdPremRate, setIpdPlanRate] = useState([]);
+  const [riderPremRate, setRiderPremRate] = useState([]);
+  const [ipdPlanNo, setIpdplanNo] = useState();
 
+  const [birth_dateE, setBirthDateE] = useState();
   console.log(
     "minAge" + minAge,
     "maxAge" + maxAge,
@@ -103,9 +106,14 @@ const Index = () => {
   const sPrem = suppPremium[0]?.premium;
   const basicPrem = basicPremium[0]?.basic_premium;
   const sumAtRisk = sumAtrisk[0]?.sum_at_risk;
+  const IpdPremRate = ipdPremRate[0]?.ipd_prem_rate;
+  const riderPrem = riderPremRate[0]?.prem;
+  const riderRate = riderPremRate[0]?.rate;
 
-  const pRate = rate?.[0].toFixed(2);
-  const pFactor = rate?.[1].toFixed(2);
+  console.log(IpdPremRate);
+
+  const pRate = rate?.[0]?.toFixed(2);
+  const pFactor = rate?.[1]?.toFixed(2);
 
   // console.log(pRate, pFactor);
 
@@ -149,7 +157,7 @@ const Index = () => {
     return `${year}-${month}-${day}`;
   };
   const comm_datee = formatAsMMDDYYYY(risk_date);
-  // console.log(comm_datee);
+  const endAtdateFormatted = formatAsMMDDYYYYy(endAtDate[0]?.endAtDate);
 
   const dob = formatAsMMDDYYYY(birth_date);
   // console.log(dob);
@@ -160,6 +168,10 @@ const Index = () => {
     // Check for any actions causing a page reload
     window.location.reload(); // Remove this line if present
     // ... other logic
+  };
+
+  const handleIpdplan = (e) => {
+    setIpdplanNo(e.target.value);
   };
 
   const handleSumAssured = (e) => {
@@ -362,6 +374,7 @@ const Index = () => {
     setProposalNo(newValue);
   };
 
+  // get proposal informations
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -377,6 +390,23 @@ const Index = () => {
     fetchData();
   }, [proposalNo]);
   // get proposal informations
+
+  // get End At date informations
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/endAtDate/${comm_datee}`
+        );
+        setEndatDate(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [risk_date]);
+  // get End At date informations
 
   //total installment
   useEffect(() => {
@@ -566,6 +596,40 @@ const Index = () => {
     fetchData();
   }, [sumAssured]);
   //  get prem plan list
+
+  // get idp premium rate
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/ipd-prem-rate/${ipdPlanNo}/${dob}/${comm_datee}/${pmode}/${planName}`
+        );
+        setIpdPlanRate(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [ipdPlanNo, dob, comm_datee, pmode, planName]);
+  // get idp premium rate
+
+  // get rider premium rate
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/rider-prem-rate/${planName}/${selectTerm}/${dob}/${comm_datee}/${sumAssured}/${pmode}`
+        );
+        setRiderPremRate(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [planName, selectTerm, dob, comm_datee, sumAssured, pmode]);
+  // get rider premium rate
 
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
@@ -1518,6 +1582,7 @@ const Index = () => {
                             onChange={handleOccupation}
                             className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
                           >
+                            <option>Select Occupation</option>
                             {occupationList?.map((occupation, i) => (
                               <option key={i} value={occupation?.occupation_ID}>
                                 {occupation?.occupation_name}
@@ -2011,6 +2076,7 @@ const Index = () => {
                         <input
                           type="text"
                           id="success"
+                          value={riderRate ? riderRate : "0"}
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
@@ -2022,6 +2088,7 @@ const Index = () => {
                         <input
                           type="text"
                           id="success"
+                          value={riderPrem ? riderPrem : "0"}
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
@@ -2049,7 +2116,7 @@ const Index = () => {
                         PLAN PREM
                       </label>
                       <select
-                        // onChange={handleSuppliClass}
+                        onChange={handleIpdplan}
                         className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
                       >
                         <>
@@ -2071,11 +2138,25 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        value={risk_date}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
                   </div>
-                  <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
+                  <div class=" mb-0 flex grid grid-cols-3 rounded  mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
+                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                      <label className="text-xs text-start w-32 mt-3 p-0">
+                        PREM RATE
+                      </label>
+
+                      <input
+                        type="text"
+                        id="success"
+                        value={IpdPremRate ? IpdPremRate : "0"}
+                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                      />
+                    </div>
+
                     <div className="bg-white flex align-items-center m-1  lg:mt-0">
                       <label className="text-xs text-start w-24 mt-3 p-0">
                         BENIFITS
@@ -2083,18 +2164,20 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        value={0}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
 
                     <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                      <label className="text-xs text-start w-48 mt-3 p-0">
+                      <label className="text-xs text-start w-24 mt-3 p-0">
                         END AT
                       </label>
 
                       <input
                         type="text"
                         id="success"
+                        value={endAtdateFormatted}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
