@@ -84,8 +84,30 @@ const Index = () => {
   const [premPlanlist, setPremPlanlist] = useState([]);
   const [endAtDate, setEndatDate] = useState([]);
   const [ipdPremRate, setIpdPlanRate] = useState([]);
-  const [riderPremRate, setRiderPremRate] = useState([]);
+  // const [riderPremRate, setRiderPremRate] = useState([]);
+  const [premWaiver, setWaiverPrem] = useState([]);
+
   const [ipdPlanNo, setIpdplanNo] = useState();
+
+  const [isChecked, setIsChecked] = useState(true);
+  const [riderPremRate, setRiderPremRate] = useState([]);
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+    // Set the riderPremRate based on the checkbox state
+    if (isChecked === false) {
+      setRiderPremRate(0);
+    }
+  };
+
+  const [iChecked, setIChecked] = useState(true);
+  const [suppliRate, setSuppliRate] = useState([]);
+  const handleCheckboxxChange = () => {
+    setIChecked(!iChecked);
+    // Set the riderPremRate based on the checkbox state
+    if (!iChecked) {
+      setSuppliRate(0);
+    }
+  };
 
   const [birth_dateE, setBirthDateE] = useState();
   console.log(
@@ -110,7 +132,8 @@ const Index = () => {
   const riderPrem = riderPremRate[0]?.prem;
   const riderRate = riderPremRate[0]?.rate;
 
-  console.log(IpdPremRate);
+  const suppliment_rate = suppliRate[0]?.supp_rate;
+  const premiumWaiver = premWaiver[0]?.waiver_prem;
 
   const pRate = rate?.[0]?.toFixed(2);
   const pFactor = rate?.[1]?.toFixed(2);
@@ -405,7 +428,7 @@ const Index = () => {
     };
 
     fetchData();
-  }, [risk_date]);
+  }, [comm_datee]);
   // get End At date informations
 
   //total installment
@@ -424,6 +447,24 @@ const Index = () => {
   }, [pmode, selectTerm]);
   // total installment
 
+  // get prem plan list
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/prem-plan-list/${sumAssured}
+            `
+        );
+        setPremPlanlist(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [sumAssured]);
+  //  get prem plan list
+
   // get chainlist
   useEffect(() => {
     const fetchData = async () => {
@@ -436,7 +477,6 @@ const Index = () => {
       } finally {
       }
     };
-
     fetchData();
   }, [projectId, agentValue]);
   // get chainlist
@@ -579,24 +619,6 @@ const Index = () => {
   }, [planName, sumAssured, basicPrem, pFactor, pmode]);
   // get sum at risk
 
-  // get prem plan list
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5000/api/prem-plan-list/${sumAssured}
-            `
-        );
-        setPremPlanlist(response?.data);
-      } catch (error) {
-      } finally {
-      }
-    };
-
-    fetchData();
-  }, [sumAssured]);
-  //  get prem plan list
-
   // get idp premium rate
   useEffect(() => {
     const fetchData = async () => {
@@ -630,6 +652,40 @@ const Index = () => {
     fetchData();
   }, [planName, selectTerm, dob, comm_datee, sumAssured, pmode]);
   // get rider premium rate
+
+  // get waiver premium
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/waiver-prem/${calcuAge}/${planName}/${basicPrem}`
+        );
+        setWaiverPrem(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [calcuAge, planName, basicPrem]);
+  // get waiver premium
+
+  // get supplimentary rate
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/suppli-rate/${occupation}/${supplimentId}/${supplimentClass}/${pmode}`
+        );
+        setSuppliRate(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [occupation, supplimentId, supplimentClass, pmode]);
+  // get supplimentary rate
 
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
@@ -1904,6 +1960,7 @@ const Index = () => {
                           onChange={handleSumAssured}
                           type="text"
                           id="success"
+                          value={sumAssured}
                           class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       )}
@@ -2040,6 +2097,7 @@ const Index = () => {
                         <input
                           type="text"
                           id="success"
+                          value={suppliment_rate}
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
@@ -2063,32 +2121,67 @@ const Index = () => {
                     <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
                         <div className="flex items-center gap-2">
-                          <Checkbox id="promotion" />
+                          {/* Use the isChecked state for the checked attribute */}
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={handleCheckboxChange}
+                          />
                           <Label className="italic" htmlFor="promotion">
                             Clear Major Diaseas Rider
                           </Label>
                         </div>
                       </div>
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                        <label className="text-xs text-start w-16 mt-3 p-0">
+                        <label className="text-xs text-start w-24 mt-3 p-0">
                           RATE
                         </label>
                         <input
                           type="text"
                           id="success"
+                          disabled
                           value={riderRate ? riderRate : "0"}
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
 
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                        <label className="text-xs text-start w-16 mt-3 p-0">
+                        <label className="text-xs text-start w-24 mt-3 p-0">
                           PREMIUM
                         </label>
                         <input
                           type="text"
                           id="success"
+                          disabled
                           value={riderPrem ? riderPrem : "0"}
+                          class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
+                        />
+                      </div>
+                    </div>
+                    <div class=" mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                        <div className="flex items-center gap-2">
+                          {/* Use the isChecked state for the checked attribute */}
+                          <input
+                            type="checkbox"
+                            checked={iChecked}
+                            onChange={handleCheckboxxChange}
+                          />
+                          <Label className="italic" htmlFor="waiver">
+                            Clear Waiver Premium
+                          </Label>
+                        </div>
+                      </div>
+
+                      <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                        <label className="text-xs text-start w-48 mt-3 p-0">
+                          WAIVER PREMIUM
+                        </label>
+                        <input
+                          type="text"
+                          id="success"
+                          disabled
+                          value={premiumWaiver ? premiumWaiver : "0"}
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
