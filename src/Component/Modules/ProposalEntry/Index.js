@@ -84,8 +84,12 @@ const Index = () => {
   const [premPlanlist, setPremPlanlist] = useState([]);
   const [endAtDate, setEndatDate] = useState([]);
   const [ipdPremRate, setIpdPlanRate] = useState([]);
-  // const [riderPremRate, setRiderPremRate] = useState([]);
+  const [oePremRate, setOeRatePrem] = useState([""]);
+  const [hospitalPremRate, setHospitalRatePrem] = useState([""]);
   const [premWaiver, setWaiverPrem] = useState([]);
+  const [eduStatus, setEducationStatus] = useState();
+
+  console.log(oePremRate);
 
   const [ipdPlanNo, setIpdplanNo] = useState();
 
@@ -131,6 +135,13 @@ const Index = () => {
   const IpdPremRate = ipdPremRate[0]?.ipd_prem_rate;
   const riderPrem = riderPremRate[0]?.prem;
   const riderRate = riderPremRate[0]?.rate;
+  const oEPremRate = oePremRate[0]?.oe_ratePrem;
+  const hosPremRate = hospitalPremRate[0]?.hos_ratePrem;
+
+  const [oeRate, oePrem] = oEPremRate ? oEPremRate.split("_") : "0";
+  const [hosRate, hosPrem] = hosPremRate ? hosPremRate.split("_") : "0";
+
+  console.log(oeRate, oePrem);
 
   const suppliment_rate = suppliRate[0]?.supp_rate;
   const premiumWaiver = premWaiver[0]?.waiver_prem;
@@ -258,6 +269,11 @@ const Index = () => {
   const handleEducation = (e) => {
     setEducation(e.target.value);
   };
+
+  const handleEducationStatus = (e) => {
+    setEducationStatus(e.target.value);
+  };
+
   const handleBranch = (e) => {
     setBranch(e.target.value);
   };
@@ -686,6 +702,50 @@ const Index = () => {
     fetchData();
   }, [occupation, supplimentId, supplimentClass, pmode]);
   // get supplimentary rate
+
+  // get Occupation prem rate
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/oe-rate/${planName}/${occupation}/${gender}/${sumAssured}/${eduStatus}/${eduStatus}/${pmode}`
+        );
+        setOeRatePrem(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [planName, occupation, gender, sumAssured, eduStatus, pmode]);
+  // get Occupation prem rate
+
+  console.log(planName, occupation, gender, sumAssured, pmode);
+
+  // get Hospital prem rate
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/hospital-premrate/${planName}/${occupation}/${gender}/${sumAssured}/${eduStatus}/${eduStatus}/${pmode}`
+        );
+        setHospitalRatePrem(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [planName, occupation, gender, sumAssured, eduStatus, pmode]);
+  //get Hospital prem rate
+
+  const extraTotalPrem =
+    parseInt(premiumWaiver, 0) +
+    parseInt(sPrem, 0) +
+    parseInt(oePrem, 0) +
+    parseInt(hosPrem, 0) +
+    parseInt(riderPrem, 0) +
+    parseInt(IpdPremRate, 0);
 
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
@@ -1662,6 +1722,21 @@ const Index = () => {
                             ))}
                           </select>
                         </div>
+
+                        <div className="text-start flex px-1">
+                          <label className="w-32 text-center  mt-3 font-bold text-xs">
+                            EDU STATUS
+                          </label>
+
+                          <select
+                            onChange={handleEducationStatus}
+                            className="form-input text-sm shadow border-[#E3F2FD] mt-3 w-full"
+                          >
+                            <option>SELECT EDU. STATUS</option>
+                            <option value={"YES"}>YES</option>
+                            <option value={"NO"}>NO</option>
+                          </select>
+                        </div>
                       </div>
 
                       <hr className="mt-2  bg-[#333]" />
@@ -2290,11 +2365,13 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        value={oeRate ? oeRate : "0"}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                       <input
                         type="text"
                         id="success"
+                        value={oePrem ? oePrem : "0"}
                         class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
                       />
                     </div>
@@ -2306,11 +2383,13 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        value={hosRate ? hosRate : 0}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                       <input
                         type="text"
                         id="success"
+                        value={hosPrem ? hosPrem : 0}
                         class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
                       />
                     </div>
@@ -2335,6 +2414,7 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        value={extraTotalPrem}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
