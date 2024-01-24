@@ -20,6 +20,7 @@ import {
   useGetSupplimentClassListQuery,
   useGetSupplimentListQuery,
   useGetThanalistQuery,
+  useGetallTypeListQuery,
 } from "../../../features/api/proposal";
 import axios from "axios";
 import swal from "sweetalert";
@@ -32,6 +33,8 @@ const Index = () => {
   const [proposalNo, setProposalNo] = useState("");
   const [chainlist, setChainList] = useState([]);
   const [proposalInfo, setProposalInfo] = useState([]);
+  const [policyInfo, setPolicyInfo] = useState([]);
+
   const [proposal_date, setProposalDate] = useState();
   const [birth_date, setBirthDate] = useState();
   const [resident, setResident] = useState();
@@ -88,11 +91,10 @@ const Index = () => {
   const [hospitalPremRate, setHospitalRatePrem] = useState([""]);
   const [premWaiver, setWaiverPrem] = useState([]);
   const [eduStatus, setEducationStatus] = useState();
-
-  console.log(oePremRate);
-
+  const [policyNo, setPolicyNo] = useState();
+  const [getPolicyNumber, setGetPolicyNo] = useState();
+  console.log(getPolicyNumber);
   const [ipdPlanNo, setIpdplanNo] = useState();
-
   const [isChecked, setIsChecked] = useState(true);
   const [riderPremRate, setRiderPremRate] = useState([]);
   const handleCheckboxChange = () => {
@@ -140,8 +142,6 @@ const Index = () => {
 
   const [oeRate, oePrem] = oEPremRate ? oEPremRate.split("_") : "0";
   const [hosRate, hosPrem] = hosPremRate ? hosPremRate.split("_") : "0";
-
-  console.log(oeRate, oePrem);
 
   const suppliment_rate = suppliRate[0]?.supp_rate;
   const premiumWaiver = premWaiver[0]?.waiver_prem;
@@ -202,6 +202,10 @@ const Index = () => {
     // Check for any actions causing a page reload
     window.location.reload(); // Remove this line if present
     // ... other logic
+  };
+
+  const handleClearPolicydata = () => {
+    setPolicyInfo("");
   };
 
   const handleIpdplan = (e) => {
@@ -413,6 +417,33 @@ const Index = () => {
     setProposalNo(newValue);
   };
 
+  const handlePolicyNo = (e) => {
+    const newValue = e.target.value;
+    setPolicyNo(newValue);
+  };
+
+  const handlePolicyNumber = (e) => {
+    const newValue = e.target.value;
+    console.log(newValue);
+    setGetPolicyNo(newValue);
+  };
+
+  // get proposal informations
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/policy-info?policy_no=${policyNo}`
+        );
+        setPolicyInfo(response?.data);
+      } catch (error) {
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [policyNo]);
+  // get proposal informations
   // get proposal informations
   useEffect(() => {
     const fetchData = async () => {
@@ -720,8 +751,6 @@ const Index = () => {
   }, [planName, occupation, gender, sumAssured, eduStatus, pmode]);
   // get Occupation prem rate
 
-  console.log(planName, occupation, gender, sumAssured, pmode);
-
   // get Hospital prem rate
   useEffect(() => {
     const fetchData = async () => {
@@ -747,6 +776,8 @@ const Index = () => {
     parseInt(riderPrem, 0) +
     parseInt(IpdPremRate, 0);
 
+  const totalAllPrem = parseInt(extraTotalPrem, 0) + parseInt(basicPrem, 0);
+
   const { data: branchList, isLoading, isError } = useGetBranchlistQuery();
   const { data: projectList, isLoadingg, isErrorr } = useGetProjectlistQuery();
   const { data: agentList } = useGetAgentlistQuery(projectId);
@@ -764,6 +795,7 @@ const Index = () => {
   const { data: premiumList } = useGetPremiumListQuery();
   const { data: SupplementaryList } = useGetSupplimentClassListQuery();
   const { data: SupplementList } = useGetSupplimentListQuery();
+  const { data: TypeList } = useGetallTypeListQuery();
 
   const { data: thanaList } = useGetThanalistQuery(
     district ? district : pdistrict
@@ -1458,10 +1490,26 @@ const Index = () => {
               <div className="text-start px-0">
                 <div className="text-start">
                   <div className="shadow-lg border m-2 rounded p-2">
-                    <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                    <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                      <div className="text-start flex px-2">
+                        <label className="text-start w-40 mt-3 font-bold text-xs">
+                          ID TYPE
+                        </label>
+                        <select
+                          // onChange={(e) => setPPostoffice(e.target.value)}
+                          // value={ppostOffice}
+                          className="form-input shadow text-sm border-[#E3F2FD] mt-1 w-full"
+                        >
+                          {TypeList?.map((type, ii) => (
+                            <option key={ii} value={type?.type_id}>
+                              {type?.type_name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
                         <label className="w-36 font-bold mt-4 text-xs">
-                          ID TYPE & NUMBER{" "}
+                          ID NUMBER{" "}
                         </label>
                         {proposalInfo[0]?.nid_number ? (
                           <input
@@ -1488,14 +1536,14 @@ const Index = () => {
 
                     <div class=" mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                       <div className="bg-white flex  align-items-center m-1  lg:mt-0">
-                        <label className="w-36 font-bold  mt-4 text-xs">
+                        <label className="w-32 font-bold  mt-4 text-xs">
                           E-TIN NUMBER{" "}
                         </label>
                         <input
                           type="text"
                           id="success"
                           value={proposalInfo[0]?.nid_number}
-                          class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
+                          class="form-input text-sm shadow border-[#E3F2FD] mt-2 w-full"
                         />
                       </div>
                     </div>
@@ -2345,7 +2393,7 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
-                        value={endAtdateFormatted}
+                        value={endAtdateFormatted ? endAtdateFormatted : "-"}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
@@ -2365,12 +2413,14 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        disabled
                         value={oeRate ? oeRate : "0"}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                       <input
                         type="text"
                         id="success"
+                        disabled
                         value={oePrem ? oePrem : "0"}
                         class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
                       />
@@ -2383,12 +2433,14 @@ const Index = () => {
                       <input
                         type="text"
                         id="success"
+                        disabled
                         value={hosRate ? hosRate : 0}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                       <input
                         type="text"
                         id="success"
+                        disabled
                         value={hosPrem ? hosPrem : 0}
                         class="form-input text-xs shadow border-[#E3F2FD] ml-1 mt-1 w-full"
                       />
@@ -2407,14 +2459,15 @@ const Index = () => {
                     </div>
 
                     <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                      <label className="text-xs text-start w-32 mt-3 p-0">
+                      <label className="text-xs font-bold text-start w-32 mt-3 p-0">
                         TOTAL EXTRA
                       </label>
 
                       <input
                         type="text"
                         id="success"
-                        value={extraTotalPrem}
+                        disabled
+                        value={extraTotalPrem ? extraTotalPrem : "0"}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
@@ -2465,53 +2518,20 @@ const Index = () => {
                       </div>
                     </div>
                     <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                      <label className="text-xs text-start ml-5 w-48 mt-3 p-0">
+                      <label className="text-sm font-bold text-start ml-5 w-48 mt-3 p-0">
                         TOTAL PREM.
                       </label>
                       <input
                         type="text"
                         id="success"
+                        value={totalAllPrem ? totalAllPrem : "0"}
                         class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                       />
                     </div>
                   </div>
+
                   <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                      <label className="text-xs text-start w-36 mt-3 p-0">
-                        EXT. PREM
-                      </label>
-                      <input
-                        type="text"
-                        id="success"
-                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
-                      />
-                    </div>
-
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                      <label className="text-xs text-start w-32 mt-3 p-0">
-                        TOTAL EXTRA
-                      </label>
-
-                      <input
-                        type="text"
-                        id="success"
-                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
-                      />
-                    </div>
-                  </div>
-                  <div class=" mb-0 flex grid grid-cols-2 rounded  mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-1  lg:mx-auto lg:mt-0">
-                    <div className="bg-white flex align-items-center m-1  lg:mt-0">
-                      <label className="text-xs text-start w-36 mt-3 p-0">
-                        STATUS
-                      </label>
-                      <input
-                        type="text"
-                        id="success"
-                        class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
-                      />
-                    </div>
-
-                    <div className="justify-center flex gap-2">
+                    <div className=" flex gap-2">
                       <div className="flex items-center gap-2">
                         <Radio
                           id="ukS"
@@ -2545,97 +2565,12 @@ const Index = () => {
       )}
       {selectedTopbarItem === "PRBM" && (
         <div className="shadow-lg border lg:mx-48 mt-1 m-2">
-          <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center lg:mx-auto lg:mt-0">
-            <div className="text-start  px-2">
-              <div className="shadow border-2 h-[210px] rounded p-1 mt-2 mb-3">
-                <h2 className=" text-start font-bold text-success  p-1 rounded text-xs text-dark">
-                  SETUP
-                </h2>
-                <div class="p-1 mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <label className=" text-start text-xs lg:ml-1">
-                      DESIGNATION
-                    </label>
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                    />
-                  </div>
-
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <label className=" text-start text-xs lg:ml-1">NAME</label>
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                    />
-                  </div>
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <label className=" text-start text-xs lg:ml-1">CODE</label>
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-1 w-full"
-                    />
-                  </div>
-                </div>
-                <div class="p-1 mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    />
-                  </div>
-
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    />
-                  </div>
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    />
-                  </div>
-                </div>
-                <div class="p-1 mb-0 flex grid grid-cols-3 rounded     mt-0 lg:grid-cols-3 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    />
-                  </div>
-
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    />
-                  </div>
-                  <div className="bg-white align-items-center m-1  lg:mt-0">
-                    <input
-                      type="text"
-                      id="success"
-                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <div class="p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center lg:mx-auto lg:mt-0">
             <div className="  text-start px-2 mb-3">
-              <div class="h-[210px] p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
+              <div class="h-[150px] p-1 mb-0 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-1">
                 <div className="text-start bg-gray mb-4 m-1">
                   <div className="shadow border-2   m-0 rounded p-0">
-                    <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
+                    <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-4 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
                         <label className="text-xs text-center w-48 mt-3 p-0">
                           DEPOSIT
@@ -2657,9 +2592,6 @@ const Index = () => {
                           class="form-input text-xs shadow border-[#E3F2FD] mt-1 w-full"
                         />
                       </div>
-                    </div>
-
-                    <div class=" mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                       <div className="bg-white flex align-items-center m-1  lg:mt-0">
                         <label className="text-xs text-start w-48 mt-3 p-0">
                           NEXT PREM DATE
@@ -2682,6 +2614,7 @@ const Index = () => {
                         />
                       </div>
                     </div>
+
                     <div class=" mb-3 flex grid grid-cols-1 rounded     mt-0 lg:grid-cols-1 gap-0  w-full  justify-center align-items-center  p-2  lg:mx-auto lg:mt-0">
                       <div className="bg-white  justify-center flex align-items-center m-1  lg:mt-0">
                         <button
@@ -3860,107 +3793,177 @@ const Index = () => {
                 <h2 className=" text-center font-bold text-success  p-1 rounded text-xs text-dark">
                   PREVIOUS POLICY NO
                 </h2>
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="text-start flex px-2">
-                    <label className="text-center mt-3  text-sm  w-20">
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-6 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start col-span-2  flex px-2">
+                    <label className=" text-center mt-3  text-sm  w-20">
                       Policy 1
                     </label>
-                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                      <>
-                        <option>Islami bank</option>
-                        <option>Midland bank</option>
-                      </>
-                    </select>
+                    <div className="bg-white w-full  mt-2  lg:mt-0">
+                      <input
+                        type="number"
+                        id="success"
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        onChange={handlePolicyNo}
+                        placeholder="Enter Policy No"
+                      />
+                    </div>
                   </div>
-                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                  <div className="bg-white col-span-3 flex align-items-center m-1  lg:mt-0">
                     <input
                       type="text"
+                      onChange={handlePolicyNumber}
                       id="success"
+                      value={
+                        policyInfo[0]
+                          ? `${policyInfo[0]?.policy_no} , ${
+                              policyInfo[0]?.proposer
+                            } , ${formatAsMMDDYYYYy(
+                              policyInfo[0]?.risk_date
+                            )} , ${policyInfo[0]?.sum_insure}`
+                          : ""
+                      }
                       class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
                     />
                   </div>
+                  <div className="col-span-1">
+                    <button
+                      onClick={handleClearPolicydata}
+                      type="submit"
+                      class="focus:outline-none rounded  btn-sm  text-xs lg:text-md  mt-0   w-24 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm ml-2 py-3 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    >
+                      CLEAR
+                    </button>
+                  </div>
                 </div>
-
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="text-start flex px-2">
-                    <label className="text-center mt-3  text-sm  w-20">
+                {/* 
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-6 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start col-span-2  flex px-2">
+                    <label className=" text-center mt-3  text-sm  w-20">
                       Policy 2
                     </label>
-                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                      <>
-                        <option>Islami bank</option>
-                        <option>Midland bank</option>
-                      </>
-                    </select>
+                    <div className="bg-white w-full  mt-2  lg:mt-0">
+                      <input
+                        type="number"
+                        id="success"
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        onChange={handlePolicyNo}
+                        placeholder="Enter Policy No"
+                      />
+                    </div>
                   </div>
-                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                  <div className="bg-white col-span-3 flex align-items-center m-1  lg:mt-0">
                     <input
                       type="text"
                       id="success"
                       class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
                     />
                   </div>
+                  <div className="col-span-1">
+                    <button
+                      onClick={handleClearPolicydata}
+                      type="submit"
+                      class="focus:outline-none rounded  btn-sm  text-xs lg:text-md  mt-0   w-24 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm ml-2 py-3 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    >
+                      CLEAR
+                    </button>
+                  </div>
                 </div>
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="text-start flex px-2">
-                    <label className="text-center mt-3  text-sm  w-20">
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-6 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start col-span-2  flex px-2">
+                    <label className=" text-center mt-3  text-sm  w-20">
                       Policy 3
                     </label>
-                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                      <>
-                        <option>Islami bank</option>
-                        <option>Midland bank</option>
-                      </>
-                    </select>
+                    <div className="bg-white w-full  mt-2  lg:mt-0">
+                      <input
+                        type="number"
+                        id="success"
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        onChange={handlePolicyNo}
+                        placeholder="Enter Policy No"
+                      />
+                    </div>
                   </div>
-                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                  <div className="bg-white col-span-3 flex align-items-center m-1  lg:mt-0">
                     <input
                       type="text"
                       id="success"
                       class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
                     />
                   </div>
+                  <div className="col-span-1">
+                    <button
+                      onClick={handleClearPolicydata}
+                      type="submit"
+                      class="focus:outline-none rounded  btn-sm  text-xs lg:text-md  mt-0   w-24 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm ml-2 py-3 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    >
+                      CLEAR
+                    </button>
+                  </div>
                 </div>
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="text-start flex px-2">
-                    <label className="text-center mt-3  text-sm  w-20">
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-6 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start col-span-2  flex px-2">
+                    <label className=" text-center mt-3  text-sm  w-20">
                       Policy 4
                     </label>
-                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                      <>
-                        <option>Islami bank</option>
-                        <option>Midland bank</option>
-                      </>
-                    </select>
+                    <div className="bg-white w-full  mt-2  lg:mt-0">
+                      <input
+                        type="number"
+                        id="success"
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        onChange={handlePolicyNo}
+                        placeholder="Enter Policy No"
+                      />
+                    </div>
                   </div>
-                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                  <div className="bg-white col-span-3 flex align-items-center m-1  lg:mt-0">
                     <input
                       type="text"
                       id="success"
                       class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
                     />
                   </div>
+                  <div className="col-span-1">
+                    <button
+                      onClick={handleClearPolicydata}
+                      type="submit"
+                      class="focus:outline-none rounded  btn-sm  text-xs lg:text-md  mt-0   w-24 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm ml-2 py-3 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    >
+                      CLEAR
+                    </button>
+                  </div>
                 </div>
-                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
-                  <div className="text-start flex px-2">
-                    <label className="text-center mt-3  text-sm  w-20">
+                <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-6 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
+                  <div className="text-start col-span-2  flex px-2">
+                    <label className=" text-center mt-3  text-sm  w-20">
                       Policy 5
                     </label>
-                    <select className="form-input h-10 text-sm shadow border-[#E3F2FD] mt-0 w-full">
-                      <>
-                        <option>Islami bank</option>
-                        <option>Midland bank</option>
-                      </>
-                    </select>
+                    <div className="bg-white w-full  mt-2  lg:mt-0">
+                      <input
+                        type="number"
+                        id="success"
+                        className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                        onChange={handlePolicyNo}
+                        placeholder="Enter Policy No"
+                      />
+                    </div>
                   </div>
-                  <div className="bg-white flex align-items-center m-1  lg:mt-0">
+                  <div className="bg-white col-span-3 flex align-items-center m-1  lg:mt-0">
                     <input
                       type="text"
                       id="success"
                       class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
                     />
                   </div>
-                </div>
+                  <div className="col-span-1">
+                    <button
+                      onClick={handleClearPolicydata}
+                      type="submit"
+                      class="focus:outline-none rounded  btn-sm  text-xs lg:text-md  mt-0   w-24 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm ml-2 py-3 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    >
+                      CLEAR
+                    </button>
+                  </div>
+                </div> */}
 
                 <div class="p-1 mb-0 flex grid grid-cols-2 rounded     mt-0 lg:grid-cols-2 gap-0  w-full  justify-center align-items-center   lg:mx-auto lg:mt-0">
                   <div className="text-end">

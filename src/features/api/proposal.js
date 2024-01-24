@@ -15,9 +15,16 @@ const proposal = apiSlice.injectEndpoints({
       }),
       providesTags: ["proposal_head"],
     }),
+
     getSupplimentList: builder.query({
       query: () => ({
         url: "/suppliment-list",
+      }),
+      providesTags: ["proposal_head"],
+    }),
+    getallTypeList: builder.query({
+      query: () => ({
+        url: "/type-list",
       }),
       providesTags: ["proposal_head"],
     }),
@@ -145,6 +152,7 @@ const proposal = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetallTypeListQuery,
   useGetSuppliPremiumQuery,
   useGetSupplimentListQuery,
   useGetSupplimentClassListQuery,
