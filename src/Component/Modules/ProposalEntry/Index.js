@@ -93,7 +93,7 @@ const Index = () => {
   const [eduStatus, setEducationStatus] = useState();
   const [policyNo, setPolicyNo] = useState();
   const [getPolicyNumber, setGetPolicyNo] = useState();
-  console.log(getPolicyNumber);
+
   const [ipdPlanNo, setIpdplanNo] = useState();
   const [isChecked, setIsChecked] = useState(true);
   const [riderPremRate, setRiderPremRate] = useState([]);
@@ -139,6 +139,12 @@ const Index = () => {
   const riderRate = riderPremRate[0]?.rate;
   const oEPremRate = oePremRate[0]?.oe_ratePrem;
   const hosPremRate = hospitalPremRate[0]?.hos_ratePrem;
+
+  const pol_i = policyInfo[0]?.policy_no;
+  const pol_proposer = policyInfo[0]?.proposer;
+  const pol_riskdate = policyInfo[0]?.risk_date;
+  const pol_suminsure = policyInfo[0]?.sum_insure;
+  console.log(pol_i);
 
   const [oeRate, oePrem] = oEPremRate ? oEPremRate.split("_") : "0";
   const [hosRate, hosPrem] = hosPremRate ? hosPremRate.split("_") : "0";
@@ -423,9 +429,7 @@ const Index = () => {
   };
 
   const handlePolicyNumber = (e) => {
-    const newValue = e.target.value;
-    console.log(newValue);
-    setGetPolicyNo(newValue);
+    setGetPolicyNo(e.target.value);
   };
 
   // get proposal informations
@@ -3780,7 +3784,7 @@ const Index = () => {
                     </label>
                     <select className="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full">
                       {bankbranchList?.map((branch, i) => (
-                        <option key={i} value={branch?.branch_name}>
+                        <option key={i} value={branch?.routing_no}>
                           {branch?.branch_name}
                         </option>
                       ))}
@@ -3811,18 +3815,15 @@ const Index = () => {
                   <div className="bg-white col-span-3 flex align-items-center m-1  lg:mt-0">
                     <input
                       type="text"
-                      onChange={handlePolicyNumber}
                       id="success"
-                      value={
-                        policyInfo[0]
-                          ? `${policyInfo[0]?.policy_no} , ${
-                              policyInfo[0]?.proposer
-                            } , ${formatAsMMDDYYYYy(
-                              policyInfo[0]?.risk_date
-                            )} , ${policyInfo[0]?.sum_insure}`
-                          : ""
-                      }
-                      class="form-input h-10 text-sm p-2 shadow border-[#E3F2FD] mt-0 w-full"
+                      value={`${pol_proposer ? pol_proposer : "0"} ,${
+                        pol_suminsure ? pol_suminsure : "0"
+                      } ,${formatAsMMDDYYYYy(
+                        pol_riskdate ? pol_riskdate : "0"
+                      )}`}
+                      disabled
+                      class="form-input text-sm shadow border-[#E3F2FD] mt-0 w-full"
+                      onChange={handlePolicyNumber}
                     />
                   </div>
                   <div className="col-span-1">
